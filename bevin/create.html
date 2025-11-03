@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Post</title>
+    <link rel="icon" type="image/x-icon" href="/blog-website/bevin.png"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="create-post-container">
+        <input type="text" id="post-title" placeholder="Title (optional)" class="post-title-input">
+        
+        <div class="editor-toolbar">
+            <!-- Text formatting options -->
+            <div class="toolbar-group">
+                <button id="bold-btn" class="toolbar-btn" title="Bold">
+                    <i class="fa-solid fa-bold"></i>
+                </button>
+                <button id="italic-btn" class="toolbar-btn" title="Italic">
+                    <i class="fa-solid fa-italic"></i>
+                </button>
+                <button id="underline-btn" class="toolbar-btn" title="Underline">
+                    <i class="fa-solid fa-underline"></i>
+                </button>
+                <button id="hr-btn" class="toolbar-btn" title="Insert Horizontal Line">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+            </div>
+
+            <!-- Font size options -->
+            <div class="toolbar-group">
+                <button id="decrease-font-btn" class="toolbar-btn" title="Decrease Font Size">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                <button id="increase-font-btn" class="toolbar-btn" title="Increase Font Size">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+
+            <!-- Text alignment options -->
+            <div class="toolbar-group">
+                <button id="align-left-btn" class="toolbar-btn" title="Align Left">
+                    <i class="fa-solid fa-align-left"></i>
+                </button>
+                <button id="align-center-btn" class="toolbar-btn" title="Align Center">
+                    <i class="fa-solid fa-align-center"></i>
+                </button>
+                <button id="align-right-btn" class="toolbar-btn" title="Align Right">
+                    <i class="fa-solid fa-align-right"></i>
+                </button>
+            </div>
+            
+            <!-- Media upload options -->
+            <div class="toolbar-group">
+                <button id="upload-image-btn" class="toolbar-btn" title="Upload Image">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Image</span>
+                </button>
+                <button id="upload-video-btn" class="toolbar-btn" title="Upload Video">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Video</span>
+                </button>
+            </div>
+        </div> 
+        
+        <div id="editor" contenteditable="true" class="content-editor"></div>
+        
+        <input type="file" id="file-input" style="display: none" accept="image/*,video/*">
+        
+        <!-- Add this to your action-buttons div in create.html -->
+        <div class="action-buttons">
+            <button id="cancel-btn" class="btn secondary-btn">Cancel</button>
+            <button id="save-draft-btn" class="btn outline-btn">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Draft
+            </button>
+            <button id="publish-btn" class="btn primary-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+                Publish
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="page-navigation-buttons">
+        <button id="back-to-top" aria-label="Back to top" title="Go to top">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+        <button id="to-bottom" aria-label="To bottom" title="Go to bottom">
+            <i class="fa-solid fa-arrow-down"></i>
+        </button>
+    </div>
+    
+    <script src="js/cloudinary.js"></script>
+    <script src="js/editor.js"></script>
+        <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+</body>
+</html>
