@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Post</title>
-    <link rel="icon" type="image/x-icon" href="bevin.png"> 
+    <link rel="icon" type="image/x-icon" href="/blog-website/bevin.png"> 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Additional styles specific to view post page */
         body {
             background-color: white;
             margin: 0;
@@ -82,12 +81,10 @@
     <script src="js/firebase-config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Navigation buttons functionality
             const backToTopButton = document.getElementById('back-to-top');
             const toBottomButton = document.getElementById('to-bottom');
 
             if (backToTopButton && toBottomButton) {
-                // Calculate document height (for to-bottom button)
                 function getDocHeight() {
                     return Math.max(
                         document.body.scrollHeight,
@@ -99,16 +96,13 @@
                     );
                 }
                 
-                // Show the appropriate buttons based on scroll position
                 window.addEventListener('scroll', function() {
-                    // Show back-to-top when scrolled down
                     if (window.scrollY > 300) {
                         backToTopButton.classList.add('visible');
                     } else {
                         backToTopButton.classList.remove('visible');
                     }
                     
-                    // Show to-bottom when not at bottom
                     const scrolledToBottom = window.scrollY + window.innerHeight > getDocHeight() - 200;
                     if (!scrolledToBottom) {
                         toBottomButton.classList.add('visible');
@@ -117,10 +111,8 @@
                     }
                 });
                 
-                // Trigger scroll event to set initial state
                 window.dispatchEvent(new Event('scroll'));
                 
-                // Scroll to top when back-to-top is clicked
                 backToTopButton.addEventListener('click', function(e) {
                     e.preventDefault();
                     window.scrollTo({
@@ -129,7 +121,6 @@
                     });
                 });
                 
-                // Scroll to bottom when to-bottom is clicked
                 toBottomButton.addEventListener('click', function(e) {
                     e.preventDefault();
                     window.scrollTo({
@@ -139,13 +130,11 @@
                 });
             }
 
-            // Get post ID from URL query parameter (removed duplicate code)
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
             
             if (postId) {
                 try {
-                    // Retrieve post data from Firebase
                     const doc = await postsCollection.doc(postId).get();
                     
                     if (doc.exists) {
