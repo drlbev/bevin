@@ -468,6 +468,14 @@ main {
     font-size: 1.2rem;
 }
 
+/* Actions container in toolbar */
+.actions-container {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; 
+}
+
 /* Save status in toolbar */
 .save-status-container {
     margin-left: auto; 
