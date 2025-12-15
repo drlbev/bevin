@@ -1,9 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Page title
+    function updatePageTitle(title) {
+        const text = title && title.trim() ? title.trim() : 'Create New Post';
+        document.title = text;
+    }
+
+    // Back to top / to bottom buttons
     const backToTopButton = document.getElementById('back-to-top');
     const toBottomButton = document.getElementById('to-bottom');
 
     if (backToTopButton && toBottomButton) {
-        // Full document height for smooth bottom scrolling
         function getDocHeight() {
             return Math.max(
                 document.body.scrollHeight,
@@ -60,8 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEditing = false;
     let currentPostId = null;
     let isDraft = false;
-
-    // Temporary image tracking until publish
     let tempImages = [];
 
     const saveConfirmation = document.createElement('div');
@@ -76,270 +80,152 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (postId) {
         loadPostForEditing(postId, false);
-        currentPostId = postId;
     } else if (draftId) {
         loadPostForEditing(draftId, true);
-        currentPostId = draftId;
         isDraft = true;
     } else {
         currentPostId = 'new_' + Date.now();
+        updatePageTitle('Create New Post');
     }
 
     if (editor.innerHTML.trim() === '') {
         editor.innerHTML = '<p><br></p>';
     }
 
-    boldBtn.addEventListener('click', () => {
-        document.execCommand('bold');
-        toggleActiveState(boldBtn);
-        editor.focus();
+    titleInput.addEventListener('input', () => {
+        if (isEditing || isDraft) {
+            updatePageTitle(titleInput.value);
+        }
     });
 
-    italicBtn.addEventListener('click', () => {
-        document.execCommand('italic');
-        toggleActiveState(italicBtn);
-        editor.focus();
-    });
+    boldBtn.onclick = () => document.execCommand('bold');
+    italicBtn.onclick = () => document.execCommand('italic');
+    underlineBtn.onclick = () => document.execCommand('underline');
+    hrBtn.onclick = () => document.execCommand('insertHorizontalRule');
 
-    underlineBtn.addEventListener('click', () => {
-        document.execCommand('underline');
-        toggleActiveState(underlineBtn);
-        editor.focus();
-    });
+    decreaseFontBtn.onclick = () => adjustFontSize(-1);
+    increaseFontBtn.onclick = () => adjustFontSize(1);
 
-    hrBtn.addEventListener('click', () => {
-        document.execCommand('insertHorizontalRule');
-        editor.focus();
-    });
-
-    decreaseFontBtn.addEventListener('click', () => {
-        adjustFontSize(-1);
-        editor.focus();
-    });
-
-    increaseFontBtn.addEventListener('click', () => {
-        adjustFontSize(1);
-        editor.focus();
-    });
-
-    alignLeftBtn.addEventListener('click', () => {
-        formatAlignment('left');
-        setActiveAlignButton(alignLeftBtn);
-        editor.focus();
-    });
-
-    alignCenterBtn.addEventListener('click', () => {
-        formatAlignment('center');
-        setActiveAlignButton(alignCenterBtn);
-        editor.focus();
-    });
-
-    alignRightBtn.addEventListener('click', () => {
-        formatAlignment('right');
-        setActiveAlignButton(alignRightBtn);
-        editor.focus();
-    });
+    alignLeftBtn.onclick = () => formatAlignment('left');
+    alignCenterBtn.onclick = () => formatAlignment('center');
+    alignRightBtn.onclick = () => formatAlignment('right');
 
     editor.addEventListener('mouseup', updateToolbarState);
     editor.addEventListener('keyup', updateToolbarState);
 
-    uploadImageBtn.addEventListener('click', () => {
+    // Media uploads
+    uploadImageBtn.onclick = () => {
         fileInput.accept = 'image/*';
         fileInput.click();
-    });
+    };
 
-    uploadVideoBtn.addEventListener('click', () => {
+    uploadVideoBtn.onclick = () => {
         fileInput.accept = 'video/*';
         fileInput.click();
-    });
+    };
 
     fileInput.addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
 
-        if (file.type.includes('image')) {
-            const tempUrl = await readFileAsDataURL(file);
-            insertTempImage(tempUrl, file);
-        } else if (file.type.includes('video')) {
-            try {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'loading-placeholder';
-                placeholder.textContent = 'Uploading video...';
-                insertAtCursor(placeholder);
-
-                const url = await uploadMedia(file, getPostFolderId());
-                placeholder.remove();
-                insertVideo(url);
-            } catch (error) {
-                console.error('Upload failed:', error);
-                alert('Failed to upload video.');
-            }
+        if (file.type.startsWith('image')) {
+            const dataUrl = await readFileAsDataURL(file);
+            insertTempImage(dataUrl, file);
+        } else {
+            const url = await uploadMedia(file, getPostFolderId());
+            insertVideo(url);
         }
 
         fileInput.value = '';
     });
 
-    // Paste images directly as data URLs for fast feedback
-    editor.addEventListener('paste', e => {
-        const items = e.clipboardData?.items || [];
-        for (const item of items) {
-            if (item.type.startsWith('image')) {
-                e.preventDefault();
-                readFileAsDataURL(item.getAsFile())
-                    .then(dataUrl => insertTempImage(dataUrl, item.getAsFile()))
-                    .catch(err => console.error(err));
-                return;
-            }
+    // Save draft
+    saveDraftBtn.onclick = async () => {
+        saveDraftBtn.disabled = true;
+        await saveDraft();
+        saveConfirmation.classList.add('show');
+        setTimeout(() => saveConfirmation.classList.remove('show'), 3000);
+        saveDraftBtn.disabled = false;
+    };
+
+    async function saveDraft() {
+        const data = {
+            title: titleInput.value.trim(),
+            content: editor.innerHTML,
+            lastSaved: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (isDraft) {
+            await draftsCollection.doc(currentPostId).update(data);
+        } else {
+            const ref = await draftsCollection.add(data);
+            currentPostId = ref.id;
+            isDraft = true;
+            window.history.replaceState({}, '', `create.html?draftId=${currentPostId}`);
         }
-    });
+    }
 
-    // Ensure consistent paragraph structure on Enter
-    editor.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            const selection = window.getSelection();
-            if (!selection.rangeCount) return;
+    async function loadPostForEditing(id, draft) {
+        const collection = draft ? draftsCollection : postsCollection;
+        const doc = await collection.doc(id).get();
 
-            let node = selection.getRangeAt(0).startContainer;
-            while (node && node !== editor) {
-                if (node.nodeName === 'P') return;
-                node = node.parentNode;
-            }
-
-            e.preventDefault();
-            document.execCommand('insertParagraph');
-        }
-    });
-
-    cancelBtn.addEventListener('click', () => {
-        if (confirm('Discard changes?')) {
+        if (!doc.exists) {
+            alert('Post not found.');
             window.location.href = 'index.html';
+            return;
         }
-    });
 
-    publishBtn.addEventListener('click', async () => {
-        publishBtn.disabled = true;
-        publishBtn.innerHTML =
-            '<i class="fa-solid fa-spinner fa-spin"></i> Publishing...';
+        const post = doc.data();
+        isEditing = true;
+        currentPostId = id;
 
-        try {
-            await processTemporaryImages();
-            publishPost();
-        } catch (error) {
-            console.error(error);
-            alert('Publishing failed.');
-            publishBtn.disabled = false;
+        titleInput.value = post.title || '';
+        editor.innerHTML = post.content || '<p><br></p>';
+
+        updatePageTitle(post.title || 'Untitled Post');
+    }
+
+    // Publish
+    publishBtn.onclick = async () => {
+        const content = editor.innerHTML.trim();
+        if (!content || content === '<p><br></p>') {
+            alert('Post is empty.');
+            return;
         }
-    });
+
+        if (isEditing && !isDraft) {
+            await postsCollection.doc(currentPostId).update({
+                title: titleInput.value.trim(),
+                content,
+                lastEdited: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } else {
+            await postsCollection.add({
+                title: titleInput.value.trim(),
+                content,
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            if (isDraft) {
+                await draftsCollection.doc(currentPostId).delete();
+            }
+        }
+
+        window.location.href = 'index.html';
+    };
 
     function readFileAsDataURL(file) {
-        return new Promise((resolve, reject) => {
+        return new Promise(res => {
             const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
+            reader.onload = () => res(reader.result);
             reader.readAsDataURL(file);
         });
     }
 
-    function insertTempImage(dataUrl, originalFile) {
+    function insertTempImage(src, file) {
         const img = document.createElement('img');
-        img.src = dataUrl;
-        img.classList.add('temp-image');
-
-        const tempId = `temp-img-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        img.dataset.tempId = tempId;
-
-        tempImages.push({ id: tempId, file: originalFile, element: img });
+        img.src = src;
         insertAtCursor(img);
-        insertAtCursor(document.createElement('br'));
-    }
-
-    async function processTemporaryImages() {
-        if (!tempImages.length) return;
-
-        const folderId = getPostFolderId();
-        for (const img of tempImages) {
-            try {
-                const url = await uploadMedia(img.file, folderId);
-                img.element.src = url;
-                img.element.classList.remove('temp-image');
-                img.element.removeAttribute('data-temp-id');
-            } catch (e) {
-                console.error('Image upload failed:', e);
-            }
-        }
-        tempImages = [];
-    }
-
-    function getPostFolderId() {
-        if (currentPostId.startsWith('post_')) {
-            return currentPostId.split('_')[1];
-        }
-        if (currentPostId.startsWith('new_')) {
-            return 'temp_' + currentPostId.split('_')[1];
-        }
-        return currentPostId;
-    }
-
-    function formatAlignment(align) {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        let node = selection.getRangeAt(0).commonAncestorContainer;
-        if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-
-        while (node !== editor && !isBlockElement(node)) {
-            node = node.parentNode;
-        }
-
-        if (node !== editor) {
-            node.removeAttribute('data-align');
-            if (align !== 'left') node.dataset.align = align;
-            node.style.textAlign = align;
-        }
-    }
-
-    function isBlockElement(node) {
-        return ['P', 'DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LI', 'BLOCKQUOTE']
-            .includes(node.nodeName);
-    }
-
-    function toggleActiveState(button) {
-        button.classList.toggle('active');
-    }
-
-    function setActiveAlignButton(active) {
-        [alignLeftBtn, alignCenterBtn, alignRightBtn]
-            .forEach(btn => btn.classList.remove('active'));
-        active.classList.add('active');
-    }
-
-    function updateToolbarState() {
-        setTimeout(() => {
-            boldBtn.classList.toggle('active', document.queryCommandState('bold'));
-            italicBtn.classList.toggle('active', document.queryCommandState('italic'));
-            underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
-        });
-    }
-
-    function adjustFontSize(delta) {
-        const size = parseInt(document.queryCommandValue('fontSize')) || 3;
-        document.execCommand('fontSize', false, Math.max(1, Math.min(7, size + delta)));
-    }
-
-    function insertAtCursor(element) {
-        editor.focus();
-        const selection = window.getSelection();
-
-        if (selection.rangeCount) {
-            const range = selection.getRangeAt(0);
-            range.insertNode(element);
-            range.setStartAfter(element);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        } else {
-            editor.appendChild(element);
-        }
     }
 
     function insertVideo(url) {
@@ -347,95 +233,30 @@ document.addEventListener('DOMContentLoaded', () => {
         video.src = url;
         video.controls = true;
         insertAtCursor(video);
-        insertAtCursor(document.createElement('br'));
     }
 
-    saveDraftBtn.addEventListener('click', async () => {
-        saveDraftBtn.disabled = true;
-        saveDraftBtn.innerHTML =
-            '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
-        try {
-            await saveDraft();
-            saveConfirmation.classList.add('show');
-            setTimeout(() => saveConfirmation.classList.remove('show'), 3000);
-        } finally {
-            saveDraftBtn.disabled = false;
-            saveDraftBtn.innerHTML =
-                '<i class="fa-solid fa-floppy-disk"></i> Save Draft';
-        }
-    });
-
-    async function saveDraft() {
-        const draftData = {
-            title: titleInput.value.trim(),
-            content: editor.innerHTML,
-            lastSaved: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        if (isDraft) {
-            await draftsCollection.doc(currentPostId).update(draftData);
-        } else {
-            const docRef = await draftsCollection.add(draftData);
-            currentPostId = docRef.id;
-            isDraft = true;
-            window.history.pushState({}, '', `create.html?draftId=${currentPostId}`);
-        }
+    function insertAtCursor(el) {
+        const range = window.getSelection().getRangeAt(0);
+        range.insertNode(el);
+        range.setStartAfter(el);
     }
 
-    async function loadPostForEditing(id, draft) {
-        try {
-            const collection = draft ? draftsCollection : postsCollection;
-            const doc = await collection.doc(id).get();
-
-            if (!doc.exists) throw new Error('Not found');
-
-            const post = doc.data();
-            isEditing = true;
-            isDraft = draft;
-            currentPostId = id;
-
-            titleInput.value = post.title || '';
-            editor.innerHTML = post.content || '';
-            updateToolbarState();
-        } catch {
-            alert('Failed to load post.');
-            window.location.href = 'index.html';
-        }
+    function adjustFontSize(delta) {
+        const size = parseInt(document.queryCommandValue('fontSize')) || 3;
+        document.execCommand('fontSize', false, Math.max(1, Math.min(7, size + delta)));
     }
 
-    async function publishPost() {
-        const content = editor.innerHTML;
-        if (!content.trim() || content === '<p><br></p>') {
-            alert('Post content is empty.');
-            publishBtn.disabled = false;
-            return;
-        }
+    function formatAlignment(align) {
+        document.execCommand(`justify${align.charAt(0).toUpperCase() + align.slice(1)}`);
+    }
 
-        try {
-            if (isEditing && !isDraft) {
-                await postsCollection.doc(currentPostId).update({
-                    title: titleInput.value.trim(),
-                    content,
-                    lastEdited: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } else {
-                const ref = await postsCollection.add({
-                    title: titleInput.value.trim(),
-                    content,
-                    date: firebase.firestore.FieldValue.serverTimestamp()
-                });
+    function updateToolbarState() {
+        boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+        italicBtn.classList.toggle('active', document.queryCommandState('italic'));
+        underlineBtn.classList.toggle('active', document.queryCommandState('underline'));
+    }
 
-                if (isDraft) {
-                    await draftsCollection.doc(currentPostId).delete();
-                }
-            }
-
-            window.location.href = 'index.html';
-        } catch (e) {
-            console.error(e);
-            alert('Publish failed.');
-            publishBtn.disabled = false;
-        }
+    function getPostFolderId() {
+        return currentPostId;
     }
 });
