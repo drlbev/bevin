@@ -31,10 +31,10 @@ body {
 
 header {
     display: flex;
-    align-items: flex-start;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px 0;
     margin-bottom: 40px;
-    max-width: 1200px;
     margin: 0 auto 40px auto;
 }
 
@@ -81,7 +81,6 @@ h1 {
 .primary-btn {
     background-color: var(--primary-color);
     color: white;
-    position: relative;
 }
 
 .primary-btn:hover {
