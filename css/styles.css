@@ -44,6 +44,23 @@ h1 {
     color: var(--dark-gray);
 }
 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.site-header {
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
 /* Section Headings */
 .section-heading {
     margin: 40px 0 20px 0;
