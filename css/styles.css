@@ -58,7 +58,7 @@ h1 {
 .header-inner {
     display: flex;
     justify-content: flex-start; 
-    align-items: center;
+    align-items: left;
 }
 
 /* Section Headings */
