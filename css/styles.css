@@ -61,6 +61,11 @@ h1 {
     align-items: flex-start;
 }
 
+#create-post-btn {
+    margin-left: 15px;
+}
+
+
 /* Section Headings */
 .section-heading {
     margin: 40px 0 20px 0;
