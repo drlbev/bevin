@@ -468,6 +468,39 @@ main {
     font-size: 1.2rem;
 }
 
+.save-status {
+    font-size: 0.9rem;
+    margin-left: auto;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.save-status.saving {
+    color: #f59e0b;
+    animation: pulse 1s infinite;
+}
+
+.save-status.saved {
+    color: #10b981;
+    animation: flash 0.6s ease;
+}
+
+.save-status.offline {
+    color: #ef4444;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+@keyframes flash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
 /* Page Navigation Buttons */
 .page-navigation-buttons {
     position: fixed;

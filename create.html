@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="create-post-container">
@@ -76,13 +76,12 @@
         <div class="action-buttons">
             <button id="cancel-btn" class="btn secondary-btn">Cancel</button>
             <button id="save-draft-btn" class="btn outline-btn">
-                <i class="fa-solid fa-floppy-disk"></i>
-                Save Draft
+                <i class="fa-solid fa-floppy-disk"></i>Save Draft
             </button>
             <button id="publish-btn" class="btn primary-btn">
-                <i class="fa-solid fa-paper-plane"></i>
-                Publish
+                <i class="fa-solid fa-paper-plane"></i>Publish
             </button>
+            <span id="save-status" class="save-status">Saved</span>
         </div>
     </div>
 
@@ -98,7 +97,7 @@
     
     <script src="js/mediadb.js"></script>
     <script src="js/editor.js"></script>
-        <!-- Firebase -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
