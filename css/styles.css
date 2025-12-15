@@ -31,8 +31,7 @@ body {
 
 header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 20px 0;
     margin-bottom: 40px;
     max-width: 1200px;
@@ -43,28 +42,6 @@ h1 {
     font-weight: 700;
     color: var(--dark-gray);
 }
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.site-header {
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-.header-inner {
-    display: flex;
-    justify-content: flex-start; 
-    align-items: flex-start;
-}
-
-#create-post-btn {
-    margin-left: 15px;
-}
-
 
 /* Section Headings */
 .section-heading {
