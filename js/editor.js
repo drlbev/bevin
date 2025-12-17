@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadVideoBtn = document.getElementById('upload-video-btn');
     const fileInput = document.getElementById('file-input');
 
+    const CLOUDINARY_CLOUD_NAME = 'dje1er5qv';
+    const CLOUDINARY_UPLOAD_PRESET = 'blog_uploads';
+
     let currentPostId = null;
     let isDraft = false;
     let isEditing = false;
@@ -257,22 +260,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function uploadMedia(file, postId) {
-        const base64 = await readFileAsBase64(file);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', `posts/${postId}`);
 
-        const res = await fetch('/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                file: base64,
-                fileName: file.name,
-                folder: `posts/${postId}`
-            })
-        });
+        const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
+            {
+                method: 'POST',
+                body: formData
+            }
+        );
 
-        if (!res.ok) throw new Error('Upload failed');
+        if (!res.ok) {
+            throw new Error('Cloudinary upload failed');
+        }
 
         const data = await res.json();
-        return data.url;
+        return data.secure_url;
     }
 
     function readFileAsBase64(file) {

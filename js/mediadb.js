@@ -1,38 +1,28 @@
-async function uploadMedia(file, postId) {
-    const folder = postId
-        ? `blog/post/${postId}`
-        : 'blog/temp';
+// Cloudinary
+const CLOUDINARY_CLOUD_NAME = 'dje1er5qv';
+const CLOUDINARY_UPLOAD_PRESET = 'blog_uploads';
 
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+// Upload function 
+async function uploadToCloudinary(file, postId) {
+    const folderPath = postId ? `blog/post/${postId}` : 'blog/temp';
 
-        reader.onload = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file: reader.result,   // base64
-                        fileName: file.name,
-                        folder
-                    })
-                });
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('folder', folderPath);
 
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
+        {
+            method: 'POST',
+            body: formData
+        }
+    );
 
-                const data = await response.json();
-                resolve(data.url); // ImageKit public URL
-            } catch (err) {
-                console.error('Media upload error:', err);
-                reject(err);
-            }
-        };
+    if (!response.ok) {
+        throw new Error(`Cloudinary upload failed: ${response.status}`);
+    }
 
-        reader.onerror = err => reject(err);
-        reader.readAsDataURL(file);
-    });
+    const data = await response.json();
+    return data.secure_url; // Public URL of uploaded file
 }
