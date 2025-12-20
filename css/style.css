@@ -358,10 +358,6 @@ main {
     text-align: right;
 }
 
-.content-editor p {
-    margin-bottom: 16px;
-}
-
 /* Temporary image styling */
 .temp-image {
     border: 2px dashed var(--secondary-color);
