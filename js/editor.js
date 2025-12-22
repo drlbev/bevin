@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let autoSaveInterval = null;
 
     let activeLinkNode = null;
+    let savedSelection = null;
 
     // Page title
 
@@ -242,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sel = window.getSelection();
         if (!sel.rangeCount || sel.isCollapsed) return alert('Select text first');
 
+        saveSelection(); // <-- save selection
         activeLinkNode = null;
         linkModalTitle.textContent = 'Insert Link';
         linkUrlInput.value = '';
@@ -265,6 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let url = linkUrlInput.value.trim();
         if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
+        restoreSelection(); // <-- restore selection before creating link
+
         if (activeLinkNode) activeLinkNode.href = url;
         else document.execCommand('createLink', false, url);
 
@@ -282,6 +286,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeLinkModal() {
         linkModal.classList.add('hidden');
         activeLinkNode = null;
+    }
+
+    function saveSelection() {
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) savedSelection = sel.getRangeAt(0);
+}
+
+    function restoreSelection() {
+        if (savedSelection) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedSelection);
+        }
     }
 
     // Link behavior

@@ -605,6 +605,9 @@ main {
     gap: 8px;
 }
 
+.hidden {
+    display: none;
+}
 
 /* Responsive styles */
 @media (max-width: 366px) {
