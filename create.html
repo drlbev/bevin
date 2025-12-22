@@ -25,6 +25,8 @@
                 <button id="underline-btn" class="toolbar-btn" title="Underline"><i class="fa-solid fa-underline"></i></button>
                 <button id="hr-btn" class="toolbar-btn" title="Horizontal Line"><i class="fa-solid fa-minus"></i></button>
                 <button id="link-btn" class="toolbar-btn" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+                <button id="edit-link-btn" class="toolbar-btn" title="Edit Link"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button id="unlink-btn" class="toolbar-btn" title="Remove Link"><i class="fa-solid fa-link-slash"></i></button>
             </div>
 
             <!-- Font Size Buttons -->
@@ -73,7 +75,26 @@
             <i class="fa-solid fa-arrow-down"></i>
         </button>
     </div>
-    
+
+    <!-- Link Modal -->
+    <div id="link-modal" class="link-modal hidden">
+        <div class="link-modal-content">
+            <h3 id="link-modal-title">Insert Link</h3>
+
+            <input
+                type="url"
+                id="link-url-input"
+                placeholder="https://example.com"
+                autocomplete="off"
+            />
+
+            <div class="link-modal-actions">
+                <button id="link-cancel-btn" class="btn secondary-btn">Cancel</button>
+                <button id="link-save-btn" class="btn primary-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/mediadb.js"></script>
     <script src="js/editor.js"></script>
     <!-- Firebase -->

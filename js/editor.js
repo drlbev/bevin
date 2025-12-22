@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const underlineBtn = document.getElementById('underline-btn');
     const hrBtn = document.getElementById('hr-btn');
     const linkBtn = document.getElementById('link-btn');
+    const editLinkBtn = document.getElementById('edit-link-btn');
+    const unlinkBtn = document.getElementById('unlink-btn');
+    const linkModal = document.getElementById('link-modal');
+    const linkUrlInput = document.getElementById('link-url-input');
+    const linkSaveBtn = document.getElementById('link-save-btn');
+    const linkCancelBtn = document.getElementById('link-cancel-btn');
+    const linkModalTitle = document.getElementById('link-modal-title');
     const decreaseFontBtn = document.getElementById('decrease-font-btn');
     const increaseFontBtn = document.getElementById('increase-font-btn');
     const alignLeftBtn = document.getElementById('align-left-btn');
@@ -35,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer = null;
     let autoSaveInterval = null;
     let pendingOfflineSave = false;
+    let activeLinkNode = null;
 
     // Page title
 
@@ -232,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let url = prompt('Enter URL (https://...)');
         if (!url) return;
 
-        // auto-fix missing protocol
         if (!/^https?:\/\//i.test(url)) {
             url = 'https://' + url;
         }
@@ -240,11 +247,51 @@ document.addEventListener('DOMContentLoaded', () => {
         document.execCommand('createLink', false, url);
     };
 
+    editLinkBtn.onclick = () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        let node = selection.anchorNode;
+        while (node && node.nodeName !== 'A') {
+            node = node.parentNode;
+        }
+
+        if (!node || node.nodeName !== 'A') {
+            alert('Place cursor inside a link to edit it');
+            return;
+        }
+
+        let newUrl = prompt('Edit URL:', node.href);
+        if (!newUrl) return;
+
+        if (!/^https?:\/\//i.test(newUrl)) {
+            newUrl = 'https://' + newUrl;
+        }
+
+        node.href = newUrl;
+    };
+
+        unlinkBtn.onclick = () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        let node = selection.anchorNode;
+        while (node && node.nodeName !== 'A') {
+            node = node.parentNode;
+        }
+
+        if (!node || node.nodeName !== 'A') {
+            alert('Place cursor inside a link to remove it');
+            return;
+        }
+
+        document.execCommand('unlink');
+    };
+
     editor.addEventListener('click', e => {
         const link = e.target.closest('a');
         if (!link) return;
 
-        // Ctrl + click (Windows) or Cmd + click (Mac) to open
         const isMac = navigator.platform.toUpperCase().includes('MAC');
         const ctrl = isMac ? e.metaKey : e.ctrlKey;
 
@@ -252,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.open(link.href, '_blank');
         }
     });
+
 
     editor.addEventListener('paste', e => {
         const text = (e.clipboardData || window.clipboardData).getData('text');
@@ -379,6 +427,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatAlign(dir) {
         document.execCommand(`justify${dir}`);
+    }
+
+    // Link modals
+    linkBtn.onclick = () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount || selection.isCollapsed) {
+            alert('Please select text first');
+            return;
+        }
+
+        activeLinkNode = null;
+        linkModalTitle.textContent = 'Insert Link';
+        linkUrlInput.value = '';
+        openLinkModal();
+    };
+
+    editLinkBtn.onclick = () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        let node = selection.anchorNode;
+        while (node && node.nodeName !== 'A') {
+            node = node.parentNode;
+        }
+
+        if (!node || node.nodeName !== 'A') {
+            alert('Place cursor inside a link');
+            return;
+        }
+
+        activeLinkNode = node;
+        linkModalTitle.textContent = 'Edit Link';
+        linkUrlInput.value = node.href;
+        openLinkModal();
+    };
+
+    linkSaveBtn.onclick = () => {
+        let url = linkUrlInput.value.trim();
+        if (!url) return;
+
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+        }
+
+        if (activeLinkNode) {
+            // Edit existing link
+            activeLinkNode.href = url;
+        } else {
+            // Create new link
+            document.execCommand('createLink', false, url);
+        }
+
+        closeLinkModal();
+    };
+
+    linkCancelBtn.onclick = closeLinkModal;
+
+    linkModal.addEventListener('click', e => {
+        if (e.target === linkModal) closeLinkModal();
+    });
+
+    function openLinkModal() {
+        linkModal.classList.remove('hidden');
+        setTimeout(() => linkUrlInput.focus(), 50);
+    }
+
+    function closeLinkModal() {
+        linkModal.classList.add('hidden');
+        linkUrlInput.value = '';
+        activeLinkNode = null;
     }
 
     // Keyboard shortcuts
