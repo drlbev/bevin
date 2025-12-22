@@ -11,19 +11,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const italicBtn = document.getElementById('italic-btn');
     const underlineBtn = document.getElementById('underline-btn');
     const hrBtn = document.getElementById('hr-btn');
+
     const linkBtn = document.getElementById('link-btn');
     const editLinkBtn = document.getElementById('edit-link-btn');
     const unlinkBtn = document.getElementById('unlink-btn');
+
     const linkModal = document.getElementById('link-modal');
     const linkUrlInput = document.getElementById('link-url-input');
     const linkSaveBtn = document.getElementById('link-save-btn');
     const linkCancelBtn = document.getElementById('link-cancel-btn');
     const linkModalTitle = document.getElementById('link-modal-title');
+
     const decreaseFontBtn = document.getElementById('decrease-font-btn');
     const increaseFontBtn = document.getElementById('increase-font-btn');
+
     const alignLeftBtn = document.getElementById('align-left-btn');
     const alignCenterBtn = document.getElementById('align-center-btn');
     const alignRightBtn = document.getElementById('align-right-btn');
+
     const uploadImageBtn = document.getElementById('upload-image-btn');
     const uploadVideoBtn = document.getElementById('upload-video-btn');
     const fileInput = document.getElementById('file-input');
@@ -36,12 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEditing = false;
     let isSaving = false;
     let isPublishing = false;
+    let pendingOfflineSave = false;
 
     let lastSavedTitle = '';
     let lastSavedContent = '';
     let debounceTimer = null;
     let autoSaveInterval = null;
-    let pendingOfflineSave = false;
+
     let activeLinkNode = null;
 
     // Page title
@@ -230,88 +236,72 @@ document.addEventListener('DOMContentLoaded', () => {
         debounceAutoSave();
     });
 
+    // Link modal
+
     linkBtn.onclick = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount || selection.isCollapsed) {
-            alert('Please select text first');
-            return;
-        }
+        const sel = window.getSelection();
+        if (!sel.rangeCount || sel.isCollapsed) return alert('Select text first');
 
-        let url = prompt('Enter URL (https://...)');
-        if (!url) return;
-
-        if (!/^https?:\/\//i.test(url)) {
-            url = 'https://' + url;
-        }
-
-        document.execCommand('createLink', false, url);
+        activeLinkNode = null;
+        linkModalTitle.textContent = 'Insert Link';
+        linkUrlInput.value = '';
+        openLinkModal();
     };
 
     editLinkBtn.onclick = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
+        let node = window.getSelection().anchorNode;
+        while (node && node.nodeName !== 'A') node = node.parentNode;
+        if (!node) return alert('Cursor must be inside a link');
 
-        let node = selection.anchorNode;
-        while (node && node.nodeName !== 'A') {
-            node = node.parentNode;
-        }
-
-        if (!node || node.nodeName !== 'A') {
-            alert('Place cursor inside a link to edit it');
-            return;
-        }
-
-        let newUrl = prompt('Edit URL:', node.href);
-        if (!newUrl) return;
-
-        if (!/^https?:\/\//i.test(newUrl)) {
-            newUrl = 'https://' + newUrl;
-        }
-
-        node.href = newUrl;
+        activeLinkNode = node;
+        linkModalTitle.textContent = 'Edit Link';
+        linkUrlInput.value = node.href;
+        openLinkModal();
     };
 
-        unlinkBtn.onclick = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
+    unlinkBtn.onclick = () => document.execCommand('unlink');
 
-        let node = selection.anchorNode;
-        while (node && node.nodeName !== 'A') {
-            node = node.parentNode;
-        }
+    linkSaveBtn.onclick = () => {
+        let url = linkUrlInput.value.trim();
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-        if (!node || node.nodeName !== 'A') {
-            alert('Place cursor inside a link to remove it');
-            return;
-        }
+        if (activeLinkNode) activeLinkNode.href = url;
+        else document.execCommand('createLink', false, url);
 
-        document.execCommand('unlink');
+        closeLinkModal();
     };
+
+    linkCancelBtn.onclick = closeLinkModal;
+    linkModal.onclick = e => e.target === linkModal && closeLinkModal();
+
+    function openLinkModal() {
+        linkModal.classList.remove('hidden');
+        setTimeout(() => linkUrlInput.focus(), 50);
+    }
+
+    function closeLinkModal() {
+        linkModal.classList.add('hidden');
+        activeLinkNode = null;
+    }
+
+    // Link behavior
 
     editor.addEventListener('click', e => {
         const link = e.target.closest('a');
         if (!link) return;
 
-        const isMac = navigator.platform.toUpperCase().includes('MAC');
-        const ctrl = isMac ? e.metaKey : e.ctrlKey;
-
-        if (ctrl) {
+        const isMac = navigator.platform.includes('Mac');
+        if ((isMac && e.metaKey) || (!isMac && e.ctrlKey)) {
             window.open(link.href, '_blank');
         }
     });
 
-
     editor.addEventListener('paste', e => {
-        const text = (e.clipboardData || window.clipboardData).getData('text');
-        if (!text) return;
-
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        if (urlRegex.test(text)) {
+        const text = e.clipboardData.getData('text');
+        if (/https?:\/\//i.test(text)) {
             e.preventDefault();
-            document.execCommand(
-                'insertHTML',
-                false,
-                text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>')
+            document.execCommand('insertHTML', false,
+                text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>')
             );
         }
     });
@@ -427,76 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatAlign(dir) {
         document.execCommand(`justify${dir}`);
-    }
-
-    // Link modals
-    linkBtn.onclick = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount || selection.isCollapsed) {
-            alert('Please select text first');
-            return;
-        }
-
-        activeLinkNode = null;
-        linkModalTitle.textContent = 'Insert Link';
-        linkUrlInput.value = '';
-        openLinkModal();
-    };
-
-    editLinkBtn.onclick = () => {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        let node = selection.anchorNode;
-        while (node && node.nodeName !== 'A') {
-            node = node.parentNode;
-        }
-
-        if (!node || node.nodeName !== 'A') {
-            alert('Place cursor inside a link');
-            return;
-        }
-
-        activeLinkNode = node;
-        linkModalTitle.textContent = 'Edit Link';
-        linkUrlInput.value = node.href;
-        openLinkModal();
-    };
-
-    linkSaveBtn.onclick = () => {
-        let url = linkUrlInput.value.trim();
-        if (!url) return;
-
-        if (!/^https?:\/\//i.test(url)) {
-            url = 'https://' + url;
-        }
-
-        if (activeLinkNode) {
-            // Edit existing link
-            activeLinkNode.href = url;
-        } else {
-            // Create new link
-            document.execCommand('createLink', false, url);
-        }
-
-        closeLinkModal();
-    };
-
-    linkCancelBtn.onclick = closeLinkModal;
-
-    linkModal.addEventListener('click', e => {
-        if (e.target === linkModal) closeLinkModal();
-    });
-
-    function openLinkModal() {
-        linkModal.classList.remove('hidden');
-        setTimeout(() => linkUrlInput.focus(), 50);
-    }
-
-    function closeLinkModal() {
-        linkModal.classList.add('hidden');
-        linkUrlInput.value = '';
-        activeLinkNode = null;
     }
 
     // Keyboard shortcuts
