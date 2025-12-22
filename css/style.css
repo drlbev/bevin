@@ -634,7 +634,13 @@ main {
     
     .action-buttons {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+    }
+
+    .action-buttons .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        border-radius: 5px;
     }
     
     .btn {
