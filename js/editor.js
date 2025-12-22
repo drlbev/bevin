@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const italicBtn = document.getElementById('italic-btn');
     const underlineBtn = document.getElementById('underline-btn');
     const hrBtn = document.getElementById('hr-btn');
+    const linkBtn = document.getElementById('link-btn');
     const decreaseFontBtn = document.getElementById('decrease-font-btn');
     const increaseFontBtn = document.getElementById('increase-font-btn');
     const alignLeftBtn = document.getElementById('align-left-btn');
@@ -221,6 +222,51 @@ document.addEventListener('DOMContentLoaded', () => {
         debounceAutoSave();
     });
 
+    linkBtn.onclick = () => {
+        const selection = window.getSelection();
+        if (!selection.rangeCount || selection.isCollapsed) {
+            alert('Please select text first');
+            return;
+        }
+
+        let url = prompt('Enter URL (https://...)');
+        if (!url) return;
+
+        // auto-fix missing protocol
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+        }
+
+        document.execCommand('createLink', false, url);
+    };
+
+    editor.addEventListener('click', e => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        // Ctrl + click (Windows) or Cmd + click (Mac) to open
+        const isMac = navigator.platform.toUpperCase().includes('MAC');
+        const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+        if (ctrl) {
+            window.open(link.href, '_blank');
+        }
+    });
+
+    editor.addEventListener('paste', e => {
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        if (!text) return;
+
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        if (urlRegex.test(text)) {
+            e.preventDefault();
+            document.execCommand(
+                'insertHTML',
+                false,
+                text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>')
+            );
+        }
+    });
 
     // Media Upload
 
