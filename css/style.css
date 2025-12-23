@@ -359,8 +359,7 @@ main {
     outline: none;
     font-family: 'Inter', sans-serif;
     font-synthesis: none;
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 0.875rem;
 }
 
 .content-editor img,
