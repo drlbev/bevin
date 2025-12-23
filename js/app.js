@@ -225,15 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatDate(timestamp) {
-        // Supports Firestore Timestamp or Date-compatible values
-        const date =
-            timestamp?.toDate?.() ||
-            (timestamp ? new Date(timestamp) : new Date());
-
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+        return formatDateTime(timestamp);
     }
 });

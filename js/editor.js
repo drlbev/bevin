@@ -142,7 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
         lastSavedContent = data.content || '';
 
         updatePageTitle(data.title);
-        setSaveStatus('Saved', 'saved');
+
+        if (data.lastSaved) {
+            setSaveStatus(`Last saved: ${formatDateTime(data.lastSaved)}`, 'saved');
+        } else {
+            setSaveStatus('Saved', 'saved');
+        }
     }
 
     // Auto-save
@@ -193,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastSavedTitle = title;
             lastSavedContent = content;
 
-            setSaveStatus('Saved', 'saved');
+            setSaveStatus(`Last saved: ${formatDateTime()}`, 'saved');
             updatePageTitle(title, false);
         } catch (err) {
             console.error(err);
@@ -249,6 +254,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hasChanges() && !confirm('Discard unsaved changes?')) return;
         window.location.href = 'index.html';
     });
+
+    function formatDateTime(timestamp) {
+        const date =
+            timestamp?.toDate?.() ||
+            (timestamp ? new Date(timestamp) : new Date());
+
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        }).replace(',', '');
+    }
 
     // Toolbar formatting
 
