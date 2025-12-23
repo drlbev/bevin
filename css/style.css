@@ -46,7 +46,7 @@ h1 {
 /* Section Headings */
 .section-heading {
     margin: 40px 0 20px 0;
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     position: relative;
     padding-left: 15px;
     display: flex;
@@ -174,11 +174,12 @@ main {
 
 .post-card h2 {
     margin-bottom: 12px;
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: var(--dark-gray);
 }
 
 .post-card p {
+    font-size: 0.875rem;
     color: var(--secondary-color);
     margin-bottom: 16px;
     line-height: 1.6;
@@ -643,6 +644,10 @@ main {
         gap: 16px;
         align-items: flex-start;
     }
+
+    .section-heading {
+        font-size: 1rem;
+    }
     
     .posts-grid {
         grid-template-columns: 1fr;
@@ -760,9 +765,5 @@ main {
     #to-bottom {
         width: 45px;
         height: 45px;
-    }
-    
-    .section-heading {
-        font-size: 1.1rem;
     }
 }
