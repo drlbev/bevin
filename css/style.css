@@ -656,6 +656,10 @@ main {
 
     .toolbar-toggle-btn {
         display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: white;
     }
 
     .actions-container {
@@ -693,6 +697,9 @@ main {
     .editor-toolbar {
         display: none;
         flex-direction: column;
+        position: sticky;
+        top: 52px;
+        z-index: 15;
         gap: 10px;
         padding: 12px;
         border: 1px solid var(--border-color);
