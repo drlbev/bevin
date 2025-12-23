@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createDraftCard(draft) {
         const descriptionPreview = (draft.description || '').trim();
         const contentPreview = stripHtmlAndLimit(draft.content, 120);
-        const previewText = descriptionPreview || 'No content';
+        const previewText = descriptionPreview;
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card draft';
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         postCard.innerHTML = `
             <div class="post-card-content">
                 <h2>${draft.title || 'Untitled Draft'}</h2>
-                <p>${previewText}</p>
+                ${previewText ? `<p>${previewText}</p>` : ``}
                 <small>Last saved: ${formatDateTime(draft.lastSaved)}</small>
             </div>
             <div class="post-card-actions">
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createPostCard(post) {
         const descriptionPreview = (post.description || '').trim();
         const contentPreview = stripHtmlAndLimit(post.content, 120);
-        const previewText = descriptionPreview || 'No content';
+        const previewText = descriptionPreview;
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card';
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         postCard.innerHTML = `
             <div class="post-card-content">
                 <h2>${post.title || 'Untitled'}</h2>
-                <p>${previewText}</p>
+                ${previewText ? `<p>${previewText}</p>` : ``}
                 <small>${formatDateTime(post.date)}</small>
             </div>
             <div class="post-card-actions">
