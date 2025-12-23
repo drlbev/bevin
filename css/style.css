@@ -645,9 +645,8 @@ main {
     }
 
     body {
-        font-family: 'Inter', sans-serif;
-        color: var(--dark-gray);
-        background-color: var(--background-color);
+        padding: 0;
+        line-height: 1.5;
     }
     
     .posts-grid {
