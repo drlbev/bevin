@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createDraftCard(draft) {
         const descriptionPreview = (draft.description || '').trim();
         const contentPreview = stripHtmlAndLimit(draft.content, 120);
-        const previewText = descriptionPreview || contentPreview || 'No content';
+        const previewText = descriptionPreview || 'No content';
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card draft';
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createPostCard(post) {
         const descriptionPreview = (post.description || '').trim();
         const contentPreview = stripHtmlAndLimit(post.content, 120);
-        const previewText = descriptionPreview || contentPreview || 'No content';
+        const previewText = descriptionPreview || 'No content';
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card';
