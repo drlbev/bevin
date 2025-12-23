@@ -221,6 +221,24 @@ main {
     border-color: var(--primary-color);
 }
 
+.post-description-input {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    font-family: 'Inter', sans-serif;
+    color: var(--dark-gray);
+    transition: border-color 0.2s ease;
+}
+
+.post-description-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
 /* Toolbar dropdown toggle button */
 .toolbar-toggle-btn {
     display: none;

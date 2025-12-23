@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.getElementById('post-title');
+    const descriptionInput = document.getElementById('post-description');
     const editor = document.getElementById('editor');
     const saveStatus = document.getElementById('save-status');
 
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pendingOfflineSave = false;
 
     let lastSavedTitle = '';
+    let lastSavedDescription = '';
     let lastSavedContent = '';
     let debounceTimer = null;
     let autoSaveInterval = null;
@@ -74,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function hasChanges() {
         return (
             titleInput.value.trim() !== lastSavedTitle ||
+            descriptionInput.value.trim() !== lastSavedDescription ||
             editor.innerHTML !== lastSavedContent
         );
     }
@@ -82,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePageTitle(titleInput.value, true);
         setSaveStatus('Unsaved');
     }
+
+    descriptionInput.addEventListener('input', () => {
+        markDirty();
+        debounceAutoSave();
+    });
 
     // Toggle toolbar
     toolbarToggle.addEventListener('click', (e) => {
@@ -138,9 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         isEditing = true;
 
         titleInput.value = data.title || '';
+        descriptionInput.value = data.description || '';
         editor.innerHTML = data.content || '<p><br></p>';
 
         lastSavedTitle = data.title || '';
+        lastSavedDescription = data.description || '';
         lastSavedContent = data.content || '';
 
         updatePageTitle(data.title);
@@ -175,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
         const content = editor.innerHTML.trim();
         if (!content || content === '<p><br></p>') return;
 
@@ -184,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const data = {
                 title,
+                description,
                 content,
                 lastSaved: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -198,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             lastSavedTitle = title;
+            lastSavedDescription = description;
             lastSavedContent = content;
 
             setSaveStatus(`Saved`, 'saved');
@@ -231,12 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isEditing && !isDraft) {
                 await postsCollection.doc(currentPostId).update({
                     title: titleInput.value.trim(),
+                    description: descriptionInput.value.trim(),
                     content,
                     lastEdited: firebase.firestore.FieldValue.serverTimestamp()
                 });
             } else {
                 await postsCollection.add({
                     title: titleInput.value.trim(),
+                    description: descriptionInput.value.trim(),
                     content,
                     date: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -663,5 +678,4 @@ document.addEventListener('DOMContentLoaded', () => {
     editor.addEventListener('input', () => {
         highlightHashtags(editor);
     });
-
 });
