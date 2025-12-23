@@ -275,6 +275,24 @@ main {
     border-color: var(--primary-color);
 }
 
+/* Toolbar dropdown toggle button */
+.toolbar-toggle-btn {
+    display: none;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* Editor Toolbar Styles */
 .editor-toolbar {
     display: flex;
@@ -332,6 +350,7 @@ main {
     border: none;
     outline: none;
     font-family: 'Inter', sans-serif;
+    font-synthesis: none;
     font-size: 1rem;
     line-height: 1.7;
 }
@@ -634,7 +653,21 @@ main {
     .post-title-input {
         font-size: 1.5rem;
     }
-    
+
+    .toolbar-toggle-btn {
+        display: flex;
+    }
+
+    .actions-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions-container .save-status {
+        margin-left: 0;
+        text-align: center;
+    }
+
     .action-buttons {
         flex-direction: column;
         gap: 8px;
@@ -651,15 +684,43 @@ main {
         justify-content: center;
     }
     
-    .editor-toolbar {
+    /* .editor-toolbar {
         flex-direction: column;
         gap: 8px;
         padding: 6px 0;
+    } */
+    
+    .editor-toolbar {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        box-shadow: var(--card-shadow);
+    }
+
+    .editor-toolbar.open {
+        display: flex;
     }
     
-    .toolbar-group {
+    /* .toolbar-group {
         flex-wrap: wrap;
         gap: 4px;
+    } */
+
+    .toolbar-group {
+        flex-wrap: wrap;
+        border-right: none !important;
+        padding-right: 0 !important;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+
+    .toolbar-group:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
     }
     
     .toolbar-group:not(:last-child) {

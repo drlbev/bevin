@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editor = document.getElementById('editor');
     const saveStatus = document.getElementById('save-status');
 
+    const toolbar = document.querySelector('.editor-toolbar');
+    const toolbarToggle = document.getElementById('toolbar-toggle');
+
     const publishBtn = document.getElementById('publish-btn');
     const saveDraftBtn = document.getElementById('save-draft-btn');
     const cancelBtn = document.getElementById('cancel-btn');
@@ -74,6 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePageTitle(titleInput.value, true);
         setSaveStatus('Unsaved');
     }
+
+    // Toggle toolbar
+    toolbarToggle.addEventListener('click', () => {
+        toolbar.classList.toggle('open');
+    });
 
     // Load draft/post
 
