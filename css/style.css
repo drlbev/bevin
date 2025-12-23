@@ -43,6 +43,11 @@ h1 {
     color: var(--dark-gray);
 }
 
+.hashtag {
+    color: var(--primary-color); 
+    font-weight: 500;
+}
+
 /* Section Headings */
 .section-heading {
     margin: 40px 0 20px 0;
@@ -61,66 +66,6 @@ h1 {
     width: 5px;
     background-color: var(--primary-color);
     border-radius: 3px;
-}
-
-/* Button Styles */
-.btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.primary-btn {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.primary-btn:hover {
-    background-color: var(--accent-color);
-    color: #333;
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow);
-}
-
-.secondary-btn {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.secondary-btn:hover {
-    background-color: var(--danger-hover);
-    transform: translateY(-2px);
-}
-
-.danger-btn {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.danger-btn:hover {
-    background-color: var(--danger-hover);
-    transform: translateY(-2px);
-}
-
-.outline-btn {
-    background-color: var(--accent-color);
-    color: #333;
-    border: 1px solid var(--accent-color);
-}
-
-.outline-btn:hover {
-    background-color: var(--primary-color);
-    color: white;
-    border: 1px solid var(--primary-color);
-    transform: translateY(-2px);
 }
 
 /* Posts Grid */
@@ -262,7 +207,7 @@ main {
 .post-title-input {
     width: 100%;
     padding: 12px 0;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     border: none;
     border-bottom: 1px solid var(--border-color);
@@ -301,7 +246,6 @@ main {
     transform: rotate(180deg);
 }
 
-
 /* Editor Toolbar Styles */
 .editor-toolbar {
     display: flex;
@@ -336,7 +280,7 @@ main {
     padding: 6px 10px;
     border-radius: 4px;
     font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -350,6 +294,66 @@ main {
     background-color: rgba(162, 119, 255, 0.1);
     border-color: var(--primary-color);
     color: var(--primary-color);
+}
+
+/* Button Styles */
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: var(--accent-color);
+    color: #333;
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+}
+
+.secondary-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.secondary-btn:hover {
+    background-color: var(--danger-hover);
+    transform: translateY(-2px);
+}
+
+.danger-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.danger-btn:hover {
+    background-color: var(--danger-hover);
+    transform: translateY(-2px);
+}
+
+.outline-btn {
+    background-color: var(--accent-color);
+    color: #333;
+    border: 1px solid var(--accent-color);
+}
+
+.outline-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+    transform: translateY(-2px);
 }
 
 /* Content Editor Styles */
@@ -384,6 +388,23 @@ main {
 .content-editor [data-align="right"] {
     text-align: right;
 }
+
+/* Editor link styles */
+.content-editor a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.content-editor a:visited {
+    color: var(--primary-hover); /* #8a5eff */
+}
+
+.content-editor a:hover,
+.content-editor a:active {
+    color: var(--primary-hover);
+}
+
 
 /* Temporary image styling */
 .temp-image {
@@ -754,6 +775,11 @@ main {
     .toolbar-btn i {
         font-size: 0.75rem;
     }
+
+    .content-editor a {
+        -webkit-tap-highlight-color: rgba(162, 119, 255, 0.25);
+    }
+
 
     .page-navigation-buttons {
         bottom: 20px;

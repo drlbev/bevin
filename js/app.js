@@ -220,8 +220,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function stripHtmlAndLimit(html, limit) {
         const tmp = document.createElement('div');
         tmp.innerHTML = html || '';
-        const text = tmp.textContent || tmp.innerText || '';
-        return text.length > limit ? text.substring(0, limit) + '...' : text;
+        let text = tmp.textContent || tmp.innerText || '';
+
+        if (text.length > limit) {
+            text = text.substring(0, limit) + '...';
+        }
+
+        // wrap hashtags
+        return text.replace(
+            /(^|\s)(#[a-zA-Z0-9_]+)/g,
+            '$1<span class="hashtag">$2</span>'
+        );
     }
 
     function formatDateTime(timestamp) {

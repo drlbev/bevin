@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let activeLinkNode = null;
     let savedSelection = null;
+    let lastTapTime = 0;
+    let longPressTimer = null;
 
     // Page title
 
@@ -361,9 +363,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!link) return;
 
         const isMac = navigator.platform.includes('Mac');
-        if ((isMac && e.metaKey) || (!isMac && e.ctrlKey)) {
+        const isDesktopModifier =
+            (isMac && e.metaKey) || (!isMac && e.ctrlKey);
+
+        // Desktop: Ctrl / Cmd + click
+        if (isDesktopModifier) {
+            e.preventDefault();
+            window.open(link.href, '_blank');
+            return;
+        }
+
+        // Mobile: double tap
+        const now = Date.now();
+        if (now - lastTapTime < 350) {
+            e.preventDefault();
             window.open(link.href, '_blank');
         }
+        lastTapTime = now;
+    });
+
+    // Mobile: long press (600ms)
+    editor.addEventListener('touchstart', e => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        longPressTimer = setTimeout(() => {
+            window.open(link.href, '_blank');
+        }, 600);
+    });
+
+    editor.addEventListener('touchend', () => {
+        clearTimeout(longPressTimer);
+    });
+
+    editor.addEventListener('touchmove', () => {
+        clearTimeout(longPressTimer);
     });
 
     editor.addEventListener('paste', e => {
@@ -581,6 +615,53 @@ document.addEventListener('DOMContentLoaded', () => {
             pendingOfflineSave = false;
             saveDraft(true);
         }
+    });
+
+    // Hashtag
+
+    function highlightHashtags(root) {
+        if (!root) return;
+
+        const walker = document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode(node) {
+                    if (!node.parentElement) return NodeFilter.FILTER_REJECT;
+                    if (node.parentElement.closest('a, .hashtag')) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return /#[\w]+/.test(node.nodeValue)
+                        ? NodeFilter.FILTER_ACCEPT
+                        : NodeFilter.FILTER_REJECT;
+                }
+            }
+        );
+
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+
+        nodes.forEach(textNode => {
+            const frag = document.createDocumentFragment();
+            const parts = textNode.nodeValue.split(/(#[\w]+)/g);
+
+            parts.forEach(part => {
+                if (/^#[\w]+$/.test(part)) {
+                    const span = document.createElement('span');
+                    span.className = 'hashtag';
+                    span.textContent = part;
+                    frag.appendChild(span);
+                } else {
+                    frag.appendChild(document.createTextNode(part));
+                }
+            });
+
+            textNode.parentNode.replaceChild(frag, textNode);
+        });
+    }
+
+    editor.addEventListener('input', () => {
+        highlightHashtags(editor);
     });
 
 });
