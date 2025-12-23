@@ -460,8 +460,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function adjustFontSize(delta) {
-        const size = parseInt(document.queryCommandValue('fontSize')) || 3;
-        document.execCommand('fontSize', false, Math.min(7, Math.max(1, size + delta)));
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+
+        const range = sel.getRangeAt(0);
+
+        if (range.collapsed) return;
+
+        const span = document.createElement('span');
+
+        const parent = range.commonAncestorContainer.nodeType === 1
+            ? range.commonAncestorContainer
+            : range.commonAncestorContainer.parentElement;
+
+        const computedSize = window.getComputedStyle(parent).fontSize;
+        const currentPx = parseFloat(computedSize) || 14;
+
+        const newSize = Math.max(10, currentPx + delta);
+
+        span.style.fontSize = `${newSize}px`;
+
+        range.surroundContents(span);
+
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
     }
 
     function formatAlign(dir) {
@@ -469,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Page navigation buttons
+
     function updateScrollButtons() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollHeight = document.documentElement.scrollHeight;
@@ -482,14 +507,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Show back-to-top after scrolling down
         if (scrollTop > 120) {
             backToTopBtn.classList.add('visible');
         } else {
             backToTopBtn.classList.remove('visible');
         }
 
-        // Show to-bottom if not near the bottom
         if (scrollTop + clientHeight < scrollHeight - 120) {
             toBottomBtn.classList.add('visible');
         } else {
@@ -498,6 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Scroll behavior
+
     backToTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -509,12 +533,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Listen to everything that changes page height
     window.addEventListener('scroll', updateScrollButtons);
     window.addEventListener('resize', updateScrollButtons);
     editor.addEventListener('input', updateScrollButtons);
 
-    // Initial check (important for load + drafts)
     setTimeout(updateScrollButtons, 300);
 
     // Keyboard shortcuts
