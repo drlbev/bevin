@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastSavedTitle = title;
             lastSavedContent = content;
 
-            setSaveStatus(`Last saved: ${formatDateTime()}`, 'saved');
+            setSaveStatus(`Saved`, 'saved');
             updatePageTitle(title, false);
         } catch (err) {
             console.error(err);
