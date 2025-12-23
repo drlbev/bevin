@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="post-card-content">
                 <h2>${draft.title || 'Untitled Draft'}</h2>
                 <p>${contentPreview || 'No content'}</p>
-                <small>Last saved: ${formatDate(draft.lastSaved)}</small>
+                <small>Last saved: ${formatDateTime(draft.lastSaved)}</small>
             </div>
             <div class="post-card-actions">
                 <button class="action-btn edit" title="Edit Draft">
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="post-card-content">
                 <h2>${post.title || 'Untitled'}</h2>
                 <p>${contentPreview}</p>
-                <small>${formatDate(post.date)}</small>
+                <small>${formatDateTime(post.date)}</small>
             </div>
             <div class="post-card-actions">
                 <button class="action-btn edit" title="Edit">
@@ -224,7 +224,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return text.length > limit ? text.substring(0, limit) + '...' : text;
     }
 
-    function formatDate(timestamp) {
-        return formatDateTime(timestamp);
+    function formatDateTime(timestamp) {
+        const date =
+            timestamp?.toDate?.() ||
+            (timestamp ? new Date(timestamp) : new Date());
+
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        }).replace(',', '');
     }
 });
