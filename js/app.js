@@ -111,11 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const descriptionPreview = (draft.description || '').trim();
         const contentPreview = stripHtmlAndLimit(draft.content, 120);
         const previewText = descriptionPreview || contentPreview || 'No content';
+
         const postCard = document.createElement('div');
         postCard.className = 'post-card draft';
         postCard.dataset.id = draft.id;
-
-        const contentPreview = stripHtmlAndLimit(draft.content, 120);
 
         postCard.innerHTML = `
             <div class="post-card-content">
@@ -133,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Navigate unless an action button was clicked
         postCard.addEventListener('click', e => {
             if (!e.target.closest('.action-btn')) {
                 window.location.href = `create.html?draftId=${draft.id}`;
@@ -159,11 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const descriptionPreview = (post.description || '').trim();
         const contentPreview = stripHtmlAndLimit(post.content, 120);
         const previewText = descriptionPreview || contentPreview || 'No content';
+
         const postCard = document.createElement('div');
         postCard.className = 'post-card';
         postCard.dataset.id = post.id;
-
-        const contentPreview = stripHtmlAndLimit(post.content, 120);
 
         postCard.innerHTML = `
             <div class="post-card-content">
@@ -181,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Open post unless clicking an action button
         postCard.addEventListener('click', e => {
             if (!e.target.closest('.action-btn')) {
                 window.open(`view.html?id=${post.id}`, '_blank');
