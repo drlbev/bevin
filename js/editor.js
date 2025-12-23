@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadVideoBtn = document.getElementById('upload-video-btn');
     const fileInput = document.getElementById('file-input');
 
+    const backToTopBtn = document.getElementById('back-to-top');
+    const toBottomBtn = document.getElementById('to-bottom');
+
     const CLOUDINARY_CLOUD_NAME = 'dje1er5qv';
     const CLOUDINARY_UPLOAD_PRESET = 'blog_uploads';
 
@@ -79,8 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Toggle toolbar
-    toolbarToggle.addEventListener('click', () => {
+    toolbarToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+
         toolbar.classList.toggle('open');
+        toolbarToggle.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (
+            toolbar.classList.contains('open') &&
+            !toolbar.contains(e.target) &&
+            !toolbarToggle.contains(e.target)
+        ) {
+            toolbar.classList.remove('open');
+            toolbarToggle.classList.remove('active');
+        }
+    });
+
+    toolbar.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            toolbar.classList.remove('open');
+            toolbarToggle.classList.remove('active');
+        });
     });
 
     // Load draft/post
@@ -443,6 +467,55 @@ document.addEventListener('DOMContentLoaded', () => {
     function formatAlign(dir) {
         document.execCommand(`justify${dir}`);
     }
+
+    // Page navigation buttons
+    function updateScrollButtons() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = window.innerHeight;
+
+        const canScroll = scrollHeight > clientHeight + 80;
+
+        if (!canScroll) {
+            backToTopBtn.classList.remove('visible');
+            toBottomBtn.classList.remove('visible');
+            return;
+        }
+
+        // Show back-to-top after scrolling down
+        if (scrollTop > 120) {
+            backToTopBtn.classList.add('visible');
+        } else {
+            backToTopBtn.classList.remove('visible');
+        }
+
+        // Show to-bottom if not near the bottom
+        if (scrollTop + clientHeight < scrollHeight - 120) {
+            toBottomBtn.classList.add('visible');
+        } else {
+            toBottomBtn.classList.remove('visible');
+        }
+    }
+
+    // Scroll behavior
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    toBottomBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth'
+        });
+    });
+
+    // Listen to everything that changes page height
+    window.addEventListener('scroll', updateScrollButtons);
+    window.addEventListener('resize', updateScrollButtons);
+    editor.addEventListener('input', updateScrollButtons);
+
+    // Initial check (important for load + drafts)
+    setTimeout(updateScrollButtons, 300);
 
     // Keyboard shortcuts
 

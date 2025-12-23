@@ -288,10 +288,18 @@ main {
     border: 1px solid var(--border-color);
     background: white;
     cursor: pointer;
-    display: flex;
     align-items: center;
     gap: 8px;
 }
+
+.toolbar-toggle-btn i {
+    transition: transform 0.2s ease;
+}
+
+.toolbar-toggle-btn.active i {
+    transform: rotate(180deg);
+}
+
 
 /* Editor Toolbar Styles */
 .editor-toolbar {
@@ -536,6 +544,7 @@ main {
 }
 
 /* Page Navigation Buttons */
+
 .page-navigation-buttons {
     position: fixed;
     bottom: 30px;
@@ -688,28 +697,28 @@ main {
         justify-content: center;
     }
     
-    /* .editor-toolbar {
-        flex-direction: column;
-        gap: 8px;
-        padding: 6px 0;
-    } */
-    
     .editor-toolbar {
-        display: none;
-        flex-direction: column;
         position: sticky;
         top: 52px;
         z-index: 15;
-        gap: 10px;
-        padding: 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        background: white;
-        box-shadow: var(--card-shadow);
+
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-4px);
+
+        transition:
+            max-height 0.25s ease,
+            opacity 0.2s ease,
+            transform 0.2s ease;
+
+        display: flex; 
     }
 
     .editor-toolbar.open {
-        display: flex;
+        max-height: 500px; 
+        opacity: 1;
+        transform: translateY(0);
     }
     
     /* .toolbar-group {
