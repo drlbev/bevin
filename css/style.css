@@ -643,6 +643,12 @@ main {
         gap: 16px;
         align-items: flex-start;
     }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--dark-gray);
+        background-color: var(--background-color);
+    }
     
     .posts-grid {
         grid-template-columns: 1fr;
@@ -653,8 +659,8 @@ main {
     }
     
     .create-post-container {
-        padding: 20px;
-        margin: 20px auto;
+        padding: 20px 30px;
+        margin: auto;
         border-radius: 8px;
     }
     
@@ -719,11 +725,6 @@ main {
         opacity: 1;
         transform: translateY(0);
     }
-    
-    /* .toolbar-group {
-        flex-wrap: wrap;
-        gap: 4px;
-    } */
 
     .toolbar-group {
         flex-wrap: wrap;
