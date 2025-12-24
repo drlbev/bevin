@@ -595,10 +595,17 @@ main {
 }
 
 .stats-group {
+    flex: 1;                
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    min-width: 260px;
+}
+
+#editor-stats {
+    margin-right: auto;    
+}
+
+#save-status {
+    margin-left: auto;     
 }
 
 /* Page Navigation Buttons */
