@@ -552,7 +552,7 @@ main {
     font-size: 1.2rem;
 }
 
-/* Word count */
+/* Editor status */
 
 .editor-stats {
     margin-left: 16px;
@@ -592,6 +592,12 @@ main {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+.toolbar-group.stats {
+    display: flex;
+    align-items: center;
+    gap: 16px; 
 }
 
 /* Page Navigation Buttons */
