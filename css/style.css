@@ -552,19 +552,14 @@ main {
     font-size: 1.2rem;
 }
 
-/* Actions container in toolbar */
-.actions-container {
+.status-container {
     display: flex;
     align-items: center;
     width: 100%;           
     gap: 0.5rem;           
 }
 
-.actions-container button {
-    flex-shrink: 0;       
-}
-
-.actions-container .save-status {
+.status-container .save-status .editor-stats {
     margin-left: auto;     
     font-size: 0.9rem;
     opacity: 0.7;
