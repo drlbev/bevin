@@ -571,6 +571,14 @@ main {
     transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
+/* Word count */
+
+.word-count {
+    margin-left: 16px;
+    font-size: 13px;
+    color: var(--secondary-color);
+}
+
 /* Save status */
 .save-status {
     font-size: 0.9rem;

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.getElementById('post-title');
     const descriptionInput = document.getElementById('post-description');
     const editor = document.getElementById('editor');
+    const wordCountEl = document.getElementById('word-count');
     const saveStatus = document.getElementById('save-status');
 
     const toolbar = document.querySelector('.editor-toolbar');
@@ -135,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPostId = `new_${Date.now()}`;
         updatePageTitle('Create New Post');
         editor.innerHTML = '<p><br></p>';
+        updateWordCount();
         setTimeout(restoreScrollPosition, 100);
     }
 
@@ -168,8 +170,25 @@ document.addEventListener('DOMContentLoaded', () => {
             setSaveStatus('Saved', 'saved');
         }
 
+        updateWordCount();
         setTimeout(restoreScrollPosition, 100);
     }
+
+    // Word count
+    function updateWordCount() {
+        if (!editor) return;
+
+        const text = editor.innerText || '';
+        const words = text.trim().split(/\s+/).filter(Boolean);
+
+        wordCountEl.textContent = `${words.length} word${words.length !== 1 ? 's' : ''}`;
+    }
+
+    editor.addEventListener('input', () => {
+        markDirty();
+        debounceAutoSave();
+        updateWordCount();
+    });
 
     // Auto-save
 
