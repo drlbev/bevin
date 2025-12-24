@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPostId = `new_${Date.now()}`;
         updatePageTitle('Create New Post');
         editor.innerHTML = '<p><br></p>';
+        setTimeout(restoreScrollPosition, 100);
     }
 
     async function loadPost(id, draft) {
@@ -166,6 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             setSaveStatus('Saved', 'saved');
         }
+
+        setTimeout(restoreScrollPosition, 100);
     }
 
     // Auto-save
@@ -231,6 +234,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveDraftBtn.addEventListener('click', () => saveDraft(false));
 
+    function getScrollKey() {
+        return `editor-scroll-${currentPostId || 'new'}`;
+    }
+
+    function saveScrollPosition() {
+        localStorage.setItem(getScrollKey(), window.scrollY.toString());
+    }
+
+    window.addEventListener('scroll', saveScrollPosition);
+    window.addEventListener('beforeunload', saveScrollPosition);
+
+    function restoreScrollPosition() {
+        const saved = localStorage.getItem(getScrollKey());
+        if (!saved) return;
+
+        requestAnimationFrame(() => {
+            window.scrollTo({
+                top: parseInt(saved, 10),
+                behavior: 'instant'
+            });
+        });
+    }
+
+    function clearScrollPosition() {
+        localStorage.removeItem(getScrollKey());
+    }
+
+    publishBtn.addEventListener('click', clearScrollPosition);
+    cancelBtn.addEventListener('click', clearScrollPosition);
+
     // Publish
 
     publishBtn.addEventListener('click', async () => {
@@ -265,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isDraft) await draftsCollection.doc(currentPostId).delete();
             }
 
+            clearScrollPosition();
             window.location.href = 'index.html';
         } catch (err) {
             console.error(err);
