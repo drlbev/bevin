@@ -555,7 +555,6 @@ main {
 /* Editor status */
 
 .editor-stats {
-    margin-left: 16px;
     font-size: 0.8125rem;
     color: var(--secondary-color);
     white-space: nowrap;
