@@ -314,6 +314,21 @@ main {
     color: var(--primary-color);
 }
 
+.toolbar-select,
+.toolbar-input {
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    font-size: 13px;
+    background: #fff;
+}
+
+.font-size-group {
+    display: flex;
+    gap: 6px;
+}
+
 /* Button Styles */
 .btn {
     display: flex;

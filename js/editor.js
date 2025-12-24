@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const decreaseFontBtn = document.getElementById('decrease-font-btn');
     const increaseFontBtn = document.getElementById('increase-font-btn');
+    const fontSizeSelect = document.getElementById('font-size-select');
+    const fontSizeInput = document.getElementById('font-size-input');
 
     const alignLeftBtn = document.getElementById('align-left-btn');
     const alignCenterBtn = document.getElementById('align-center-btn');
@@ -301,6 +303,50 @@ document.addEventListener('DOMContentLoaded', () => {
     decreaseFontBtn.onclick = () => adjustFontSize(-1);
     increaseFontBtn.onclick = () => adjustFontSize(1);
 
+    fontSizeSelect.addEventListener('change', () => {
+        const size = parseInt(fontSizeSelect.value);
+        if (!size) return;
+
+        fontSizeInput.value = size;
+        applyFontSize(size);
+    });
+
+    fontSizeInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            fontSizeInput.blur();
+        }
+    });
+
+    fontSizeInput.addEventListener('blur', () => {
+        let size = parseInt(fontSizeInput.value);
+        if (!size) return;
+
+        size = Math.min(72, Math.max(10, size));
+        fontSizeInput.value = size;
+        fontSizeSelect.value = size;
+
+        applyFontSize(size);
+    });
+
+    editor.addEventListener('mouseup', syncFontSizeUI);
+    editor.addEventListener('keyup', syncFontSizeUI);
+
+    function syncFontSizeUI() {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+
+        let node = sel.anchorNode;
+        if (node?.nodeType === 3) node = node.parentElement;
+        if (!node) return;
+
+        const size = parseFloat(getComputedStyle(node).fontSize);
+        if (!size) return;
+
+        fontSizeInput.value = Math.round(size);
+        fontSizeSelect.value = Math.round(size);
+    }
+
     alignLeftBtn.onclick = () => formatAlign('Left');
     alignCenterBtn.onclick = () => formatAlign('Center');
     alignRightBtn.onclick = () => formatAlign('Right');
@@ -571,6 +617,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const newRange = document.createRange();
         newRange.selectNodeContents(span);
         sel.addRange(newRange);
+    }
+
+    function applyFontSize(sizePx) {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+
+        const range = sel.getRangeAt(0);
+        if (range.collapsed) return;
+
+        const span = document.createElement('span');
+        span.style.fontSize = `${sizePx}px`;
+
+        try {
+            range.surroundContents(span);
+        } catch {
+            // fallback for complex selections
+            document.execCommand(
+                'insertHTML',
+                false,
+                `<span style="font-size:${sizePx}px">${range.toString()}</span>`
+            );
+        }
+
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
+
+        markDirty();
+        debounceAutoSave();
     }
 
     function formatAlign(dir) {
