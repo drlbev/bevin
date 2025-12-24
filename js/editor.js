@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.getElementById('post-title');
     const descriptionInput = document.getElementById('post-description');
     const editor = document.getElementById('editor');
-    const wordCountEl = document.getElementById('word-count');
+    const editorStatsEl = document.getElementById('editor-stats');
     const saveStatus = document.getElementById('save-status');
 
     const toolbar = document.querySelector('.editor-toolbar');
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPostId = `new_${Date.now()}`;
         updatePageTitle('Create New Post');
         editor.innerHTML = '<p><br></p>';
-        updateWordCount();
+        updateEditorStats();
         setTimeout(restoreScrollPosition, 100);
     }
 
@@ -170,24 +170,29 @@ document.addEventListener('DOMContentLoaded', () => {
             setSaveStatus('Saved', 'saved');
         }
 
-        updateWordCount();
+        updateEditorStats();
         setTimeout(restoreScrollPosition, 100);
     }
 
-    // Word count
-    function updateWordCount() {
+    // Editor counts
+    function updateEditorStats() {
         if (!editor) return;
 
+        // Word count
         const text = editor.innerText || '';
-        const words = text.trim().split(/\s+/).filter(Boolean);
+        const words = text.trim().split(/\s+/).filter(Boolean).length;
 
-        wordCountEl.textContent = `${words.length} word${words.length !== 1 ? 's' : ''}`;
+        // Media count
+        const images = editor.querySelectorAll('img').length;
+        const videos = editor.querySelectorAll('video').length;
+
+        editorStatsEl.textContent = `Words: ${words} | Images: ${images} | Videos: ${videos}`;
     }
 
     editor.addEventListener('input', () => {
         markDirty();
         debounceAutoSave();
-        updateWordCount();
+        updateEditorStats();
     });
 
     // Auto-save
