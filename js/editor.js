@@ -378,17 +378,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     smallHrBtn.onclick = insertSmallHr;
 
-    decreaseFontBtn.onclick = () => adjustFontSize(-1);
-    increaseFontBtn.onclick = () => adjustFontSize(1);
+    decreaseFontBtn.onclick = () => {
+        const size = getCurrentFontSize();
+        applyFontSizePx(size - 1);
+    };
+
+    increaseFontBtn.onclick = () => {
+        const size = getCurrentFontSize();
+        applyFontSizePx(size + 1);
+    };
 
     editor.addEventListener('mouseup', saveLastSelection);
     editor.addEventListener('keyup', saveLastSelection);
 
     function saveLastSelection() {
         const sel = window.getSelection();
-        if (sel.rangeCount > 0) {
-            lastSelection = sel.getRangeAt(0);
-        }
+        if (!sel || sel.rangeCount === 0) return;
+
+        const range = sel.getRangeAt(0);
+        if (!editor.contains(range.startContainer)) return;
+
+        lastSelection = range;
     }
 
     fontSizeSelect.addEventListener('change', () => {
@@ -396,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!size) return;
 
         fontSizeInput.value = size;
-        applyFontSize(size);
+        applyFontSizePx(size);
     });
 
     fontSizeInput.addEventListener('keydown', e => {
@@ -414,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fontSizeInput.value = size;
         fontSizeSelect.value = size;
 
-        applyFontSize(size);
+        applyFontSizePx(size);
     });
 
     editor.addEventListener('mouseup', syncFontSizeUI);
@@ -692,32 +702,34 @@ document.addEventListener('DOMContentLoaded', () => {
         debounceAutoSave();
     }
 
-    function adjustFontSize(delta) {
+    function applyFontSizePx(sizePx) {
         if (!lastSelection) return;
 
         const range = lastSelection.cloneRange();
 
-        const span = document.createElement('span');
-
-        let node = range.startContainer;
-        if (node.nodeType === 3) node = node.parentElement;
-
-        const currentSize =
-            parseFloat(getComputedStyle(node).fontSize) || 14;
-
-        const newSize = Math.min(72, Math.max(10, currentSize + delta));
-        span.style.fontSize = `${newSize}px`;
-
+        // If cursor only → expand to word
         if (range.collapsed) {
-            range.expand?.('word');
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            document.execCommand(
+                'insertHTML',
+                false,
+                `<span style="font-size:${sizePx}px">\u200b</span>`
+            );
+            return;
         }
+
+        const span = document.createElement('span');
+        span.style.fontSize = `${sizePx}px`;
 
         span.appendChild(range.extractContents());
         range.insertNode(span);
 
+        // Restore selection
         const sel = window.getSelection();
         sel.removeAllRanges();
-
         const newRange = document.createRange();
         newRange.selectNodeContents(span);
         sel.addRange(newRange);
@@ -726,34 +738,15 @@ document.addEventListener('DOMContentLoaded', () => {
         debounceAutoSave();
     }
 
-    function applyFontSize(sizePx) {
+    function getCurrentFontSize() {
         const sel = window.getSelection();
-        if (!sel.rangeCount) return;
+        if (!sel.rangeCount) return 14;
 
-        const range = sel.getRangeAt(0);
-        if (range.collapsed) return;
+        let node = sel.anchorNode;
+        if (node.nodeType === 3) node = node.parentElement;
+        if (!node) return 14;
 
-        const span = document.createElement('span');
-        span.style.fontSize = `${sizePx}px`;
-
-        try {
-            range.surroundContents(span);
-        } catch {
-            // fallback for complex selections
-            document.execCommand(
-                'insertHTML',
-                false,
-                `<span style="font-size:${sizePx}px">${range.toString()}</span>`
-            );
-        }
-
-        sel.removeAllRanges();
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        sel.addRange(newRange);
-
-        markDirty();
-        debounceAutoSave();
+        return parseFloat(getComputedStyle(node).fontSize) || 14;
     }
 
     function formatAlign(dir) {

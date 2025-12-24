@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        :root {
+            --post-font-size: 1rem;
+        }
+
         body {
             background-color: white;
             margin: 0;
@@ -38,10 +42,7 @@
         
         .post-content {
             text-align: left;  
-        }
-
-        .post-content p {
-            font-size: 0.875rem;
+            font-size: var(--post-font-size);
         }
         
         .post-content img,
@@ -54,6 +55,9 @@
         }
 
         @media (max-width: 366px) {
+            :root {
+                --post-font-size: 0.875rem;
+            }
             .post-container {
                 padding: 20px 15px;
             }
