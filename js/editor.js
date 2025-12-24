@@ -299,7 +299,24 @@ document.addEventListener('DOMContentLoaded', () => {
     boldBtn.onclick = () => document.execCommand('bold');
     italicBtn.onclick = () => document.execCommand('italic');
     underlineBtn.onclick = () => document.execCommand('underline');
-    hrBtn.onclick = () => document.execCommand('insertHorizontalRule');
+    
+    hrBtn.onclick = () => {
+        document.execCommand('insertHorizontalRule');
+
+        // Style the most recently inserted <hr>
+        const hrs = editor.querySelectorAll('hr');
+        const hr = hrs[hrs.length - 1];
+        if (!hr) return;
+
+        hr.style.border = 'none';
+        hr.style.borderTop = '1px solid #000';
+        hr.style.width = '100%';
+        hr.style.margin = '16px 0';
+
+        markDirty();
+        debounceAutoSave();
+    };    
+
     smallHrBtn.onclick = insertSmallHr;
 
     decreaseFontBtn.onclick = () => adjustFontSize(-1);
