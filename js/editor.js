@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastSavedContent = '';
     let debounceTimer = null;
     let autoSaveInterval = null;
+    let lastSelection = null;
 
     let activeLinkNode = null;
     let savedSelection = null;
@@ -175,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Editor counts
-    
+
     function updateEditorStats() {
         if (!editor) return;
 
@@ -379,6 +380,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     decreaseFontBtn.onclick = () => adjustFontSize(-1);
     increaseFontBtn.onclick = () => adjustFontSize(1);
+
+    editor.addEventListener('mouseup', saveLastSelection);
+    editor.addEventListener('keyup', saveLastSelection);
+
+    function saveLastSelection() {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            lastSelection = sel.getRangeAt(0);
+        }
+    }
 
     fontSizeSelect.addEventListener('change', () => {
         const size = parseInt(fontSizeSelect.value);
@@ -682,32 +693,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function adjustFontSize(delta) {
-        const sel = window.getSelection();
-        if (!sel.rangeCount) return;
+        if (!lastSelection) return;
 
-        const range = sel.getRangeAt(0);
-
-        if (range.collapsed) return;
+        const range = lastSelection.cloneRange();
 
         const span = document.createElement('span');
 
-        const parent = range.commonAncestorContainer.nodeType === 1
-            ? range.commonAncestorContainer
-            : range.commonAncestorContainer.parentElement;
+        let node = range.startContainer;
+        if (node.nodeType === 3) node = node.parentElement;
 
-        const computedSize = window.getComputedStyle(parent).fontSize;
-        const currentPx = parseFloat(computedSize) || 14;
+        const currentSize =
+            parseFloat(getComputedStyle(node).fontSize) || 14;
 
-        const newSize = Math.max(10, currentPx + delta);
-
+        const newSize = Math.min(72, Math.max(10, currentSize + delta));
         span.style.fontSize = `${newSize}px`;
 
-        range.surroundContents(span);
+        if (range.collapsed) {
+            range.expand?.('word');
+        }
 
+        span.appendChild(range.extractContents());
+        range.insertNode(span);
+
+        const sel = window.getSelection();
         sel.removeAllRanges();
+
         const newRange = document.createRange();
         newRange.selectNodeContents(span);
         sel.addRange(newRange);
+
+        markDirty();
+        debounceAutoSave();
     }
 
     function applyFontSize(sizePx) {

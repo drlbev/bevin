@@ -289,6 +289,12 @@ main {
     z-index: 10;
 }
 
+.editor-toolbar button,
+.editor-toolbar select,
+.editor-toolbar input {
+    user-select: none;
+}
+
 .toolbar-group {
     display: flex;
     gap: 5px;
