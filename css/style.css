@@ -15,6 +15,17 @@
     --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Text selection (highlight) */
+::selection {
+    background-color: var(--accent-color);
+    color: #333;
+}
+
+::-moz-selection {
+    background-color: var(--accent-color);
+    color: #333;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

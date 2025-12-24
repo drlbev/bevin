@@ -303,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
     hrBtn.onclick = () => {
         document.execCommand('insertHorizontalRule');
 
-        // Style the most recently inserted <hr>
         const hrs = editor.querySelectorAll('hr');
         const hr = hrs[hrs.length - 1];
         if (!hr) return;
