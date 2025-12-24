@@ -410,7 +410,7 @@ main {
     outline: none;
     font-family: 'Inter', sans-serif;
     font-synthesis: none;
-    font-size: 0.875rem;
+    font-size: 1rem;
 }
 
 .content-editor img,
@@ -821,10 +821,12 @@ main {
         font-size: 0.75rem;
     }
 
+    .content-editor {
+        font-size: 0.875rem;
+    }
     .content-editor a {
         -webkit-tap-highlight-color: rgba(162, 119, 255, 0.25);
     }
-
 
     .page-navigation-buttons {
         bottom: 20px;
