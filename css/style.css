@@ -597,9 +597,9 @@ main {
 /* Stats + save status spacing */
 .stats-group {
     display: flex;
-    align-items: left;
+    align-items: center;
     justify-content: space-between;
-    min-width: 260px; 
+    flex: 1;
 }
 
 /* Page Navigation Buttons */
