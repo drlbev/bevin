@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Editor counts
+    
     function updateEditorStats() {
         if (!editor) return;
 
