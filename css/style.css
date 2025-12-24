@@ -575,14 +575,14 @@ main {
 
 .editor-stats {
     margin-left: 16px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--secondary-color);
     white-space: nowrap;
 }
 
 /* Save status */
 .save-status {
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
     opacity: 0.7;
     transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
