@@ -552,20 +552,6 @@ main {
     font-size: 1.2rem;
 }
 
-.status-container {
-    display: flex;
-    align-items: center;
-    width: 100%;           
-    gap: 0.5rem;           
-}
-
-.status-container .save-status .editor-stats {
-    margin-left: auto;     
-    font-size: 0.9rem;
-    opacity: 0.7;
-    transition: opacity 0.3s ease, color 0.3s ease, transform 0.3s ease;
-}
-
 /* Word count */
 
 .editor-stats {
