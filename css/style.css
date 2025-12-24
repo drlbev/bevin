@@ -320,7 +320,8 @@ main {
     padding: 0 6px;
     border-radius: 6px;
     border: 1px solid #e5e7eb;
-    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
     background: #fff;
 }
 
@@ -676,7 +677,8 @@ main {
 
 #link-url-input {
     padding: 10px;
-    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
     border-radius: 6px;
     border: 1px solid #d1d5db;
 }
