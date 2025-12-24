@@ -325,11 +325,6 @@ main {
     background: #fff;
 }
 
-.font-size-group {
-    display: flex;
-    gap: 6px;
-}
-
 /* Button Styles */
 .btn {
     display: flex;
