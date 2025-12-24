@@ -594,10 +594,11 @@ main {
     100% { transform: scale(1); }
 }
 
-.toolbar-group.stats {
+.stats-group {
     display: flex;
     align-items: center;
-    gap: 16px; 
+    justify-content: space-between;
+    min-width: 260px;
 }
 
 /* Page Navigation Buttons */
