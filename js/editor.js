@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const alignCenterBtn = document.getElementById('align-center-btn');
     const alignRightBtn = document.getElementById('align-right-btn');
 
+    const undoBtn = document.getElementById('undo-btn');
+    const redoBtn = document.getElementById('redo-btn');
+
     const uploadImageBtn = document.getElementById('upload-image-btn');
     const uploadVideoBtn = document.getElementById('upload-video-btn');
     const fileInput = document.getElementById('file-input');
@@ -425,6 +428,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Undo/redo buttons
+
+    undoBtn.onclick = () => {
+        document.execCommand('undo');
+        markDirty();
+    };
+
+    redoBtn.onclick = () => {
+        document.execCommand('redo');
+        markDirty();
+    };
+
     // Media Upload
 
     uploadImageBtn.onclick = () => {
@@ -622,6 +637,15 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'b': e.preventDefault(); document.execCommand('bold'); break;
             case 'i': e.preventDefault(); document.execCommand('italic'); break;
             case 'u': e.preventDefault(); document.execCommand('underline'); break;
+            case 'z':
+                e.preventDefault();
+                if (e.shiftKey) document.execCommand('redo');
+                else document.execCommand('undo');
+                break;
+            case 'y':
+                e.preventDefault();
+                document.execCommand('redo');
+                break;
         }
     });
 
