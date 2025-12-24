@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const italicBtn = document.getElementById('italic-btn');
     const underlineBtn = document.getElementById('underline-btn');
     const hrBtn = document.getElementById('hr-btn');
+    const smallHrBtn = document.getElementById('small-hr-btn');
 
     const linkBtn = document.getElementById('link-btn');
     const editLinkBtn = document.getElementById('edit-link-btn');
@@ -299,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     italicBtn.onclick = () => document.execCommand('italic');
     underlineBtn.onclick = () => document.execCommand('underline');
     hrBtn.onclick = () => document.execCommand('insertHorizontalRule');
+    smallHrBtn.onclick = insertSmallHr;
 
     decreaseFontBtn.onclick = () => adjustFontSize(-1);
     increaseFontBtn.onclick = () => adjustFontSize(1);
@@ -588,6 +590,20 @@ document.addEventListener('DOMContentLoaded', () => {
         range.setStartAfter(el);
         sel.removeAllRanges();
         sel.addRange(range);
+    }
+
+    function insertSmallHr() {
+        const hr = document.createElement('hr');
+        hr.style.border = 'none';
+        hr.style.borderTop = '1px solid #e5e7eb';
+        hr.style.margin = '12px 0';
+        hr.style.width = '40%';
+
+        insertAtCursor(hr);
+        insertAtCursor(document.createElement('p'));
+
+        markDirty();
+        debounceAutoSave();
     }
 
     function adjustFontSize(delta) {
