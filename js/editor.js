@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hr = document.createElement('hr');
         hr.style.border = 'none';
         hr.style.borderTop = '1px solid #e5e7eb';
-        hr.style.margin = '12px 0';
+        hr.style.margin = '12px auto';
         hr.style.width = '40%';
 
         insertAtCursor(hr);
