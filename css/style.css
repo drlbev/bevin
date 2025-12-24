@@ -597,7 +597,7 @@ main {
 /* Stats + save status spacing */
 .stats-group {
     display: flex;
-    align-items: center;
+    align-items: left;
     justify-content: space-between;
     min-width: 260px; 
 }
