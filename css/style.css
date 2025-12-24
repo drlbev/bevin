@@ -594,18 +594,12 @@ main {
     100% { transform: scale(1); }
 }
 
+/* Stats + save status spacing */
 .stats-group {
-    flex: 1;                
     display: flex;
     align-items: center;
-}
-
-#editor-stats {
-    margin-right: auto;    
-}
-
-#save-status {
-    margin-left: auto;     
+    justify-content: space-between;
+    min-width: 260px; 
 }
 
 /* Page Navigation Buttons */
