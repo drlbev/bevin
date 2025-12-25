@@ -28,11 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const linkCancelBtn = document.getElementById('link-cancel-btn');
     const linkModalTitle = document.getElementById('link-modal-title');
 
-    const decreaseFontBtn = document.getElementById('decrease-font-btn');
-    const increaseFontBtn = document.getElementById('increase-font-btn');
-    const fontSizeSelect = document.getElementById('font-size-select');
-    const fontSizeInput = document.getElementById('font-size-input');
-
     const alignLeftBtn = document.getElementById('align-left-btn');
     const alignCenterBtn = document.getElementById('align-center-btn');
     const alignRightBtn = document.getElementById('align-right-btn');
@@ -62,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastSavedContent = '';
     let debounceTimer = null;
     let autoSaveInterval = null;
-    let lastSelection = null;
 
     let activeLinkNode = null;
     let savedSelection = null;
@@ -180,11 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateEditorStats() {
         if (!editor) return;
 
-        // Word count
         const text = editor.innerText || '';
         const words = text.trim().split(/\s+/).filter(Boolean).length;
 
-        // Media count
         const images = editor.querySelectorAll('img').length;
         const videos = editor.querySelectorAll('video').length;
 
@@ -378,73 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     smallHrBtn.onclick = insertSmallHr;
 
-    decreaseFontBtn.onclick = () => {
-        const size = getCurrentFontSize();
-        applyFontSizePx(size - 1);
-    };
-
-    increaseFontBtn.onclick = () => {
-        const size = getCurrentFontSize();
-        applyFontSizePx(size + 1);
-    };
-
-    editor.addEventListener('mouseup', saveLastSelection);
-    editor.addEventListener('keyup', saveLastSelection);
-
-    function saveLastSelection() {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return;
-
-        const range = sel.getRangeAt(0);
-        if (!editor.contains(range.startContainer)) return;
-
-        lastSelection = range;
-    }
-
-    fontSizeSelect.addEventListener('change', () => {
-        const size = parseInt(fontSizeSelect.value);
-        if (!size) return;
-
-        fontSizeInput.value = size;
-        applyFontSizePx(size);
-    });
-
-    fontSizeInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            fontSizeInput.blur();
-        }
-    });
-
-    fontSizeInput.addEventListener('blur', () => {
-        let size = parseInt(fontSizeInput.value);
-        if (!size) return;
-
-        size = Math.min(72, Math.max(10, size));
-        fontSizeInput.value = size;
-        fontSizeSelect.value = size;
-
-        applyFontSizePx(size);
-    });
-
-    editor.addEventListener('mouseup', syncFontSizeUI);
-    editor.addEventListener('keyup', syncFontSizeUI);
-
-    function syncFontSizeUI() {
-        const sel = window.getSelection();
-        if (!sel.rangeCount) return;
-
-        let node = sel.anchorNode;
-        if (node?.nodeType === 3) node = node.parentElement;
-        if (!node) return;
-
-        const size = parseFloat(getComputedStyle(node).fontSize);
-        if (!size) return;
-
-        fontSizeInput.value = Math.round(size);
-        fontSizeSelect.value = Math.round(size);
-    }
-
     alignLeftBtn.onclick = () => formatAlign('Left');
     alignCenterBtn.onclick = () => formatAlign('Center');
     alignRightBtn.onclick = () => formatAlign('Right');
@@ -460,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sel = window.getSelection();
         if (!sel.rangeCount || sel.isCollapsed) return alert('Select text first');
 
-        saveSelection(); // <-- save selection
+        saveSelection();
         activeLinkNode = null;
         linkModalTitle.textContent = 'Insert Link';
         linkUrlInput.value = '';
@@ -484,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let url = linkUrlInput.value.trim();
         if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
-        restoreSelection(); // <-- restore selection before creating link
+        restoreSelection();
 
         if (activeLinkNode) activeLinkNode.href = url;
         else document.execCommand('createLink', false, url);
@@ -506,9 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveSelection() {
-    const sel = window.getSelection();
-    if (sel.rangeCount > 0) savedSelection = sel.getRangeAt(0);
-}
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) savedSelection = sel.getRangeAt(0);
+    }
 
     function restoreSelection() {
         if (savedSelection) {
@@ -528,14 +453,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isDesktopModifier =
             (isMac && e.metaKey) || (!isMac && e.ctrlKey);
 
-        // Desktop: Ctrl / Cmd + click
         if (isDesktopModifier) {
             e.preventDefault();
             window.open(link.href, '_blank');
             return;
         }
 
-        // Mobile: double tap
         const now = Date.now();
         if (now - lastTapTime < 350) {
             e.preventDefault();
@@ -544,7 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lastTapTime = now;
     });
 
-    // Mobile: long press (600ms)
     editor.addEventListener('touchstart', e => {
         const link = e.target.closest('a');
         if (!link) return;
@@ -643,15 +565,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return data.secure_url;
     }
 
-    function readFileAsBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
     function insertImage(url) {
         const img = document.createElement('img');
         img.src = url;
@@ -700,53 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         markDirty();
         debounceAutoSave();
-    }
-
-    function applyFontSizePx(sizePx) {
-        if (!lastSelection) return;
-
-        const range = lastSelection.cloneRange();
-
-        // If cursor only → expand to word
-        if (range.collapsed) {
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-            document.execCommand(
-                'insertHTML',
-                false,
-                `<span style="font-size:${sizePx}px">\u200b</span>`
-            );
-            return;
-        }
-
-        const span = document.createElement('span');
-        span.style.fontSize = `${sizePx}px`;
-
-        span.appendChild(range.extractContents());
-        range.insertNode(span);
-
-        // Restore selection
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        sel.addRange(newRange);
-
-        markDirty();
-        debounceAutoSave();
-    }
-
-    function getCurrentFontSize() {
-        const sel = window.getSelection();
-        if (!sel.rangeCount) return 14;
-
-        let node = sel.anchorNode;
-        if (node.nodeType === 3) node = node.parentElement;
-        if (!node) return 14;
-
-        return parseFloat(getComputedStyle(node).fontSize) || 14;
     }
 
     function formatAlign(dir) {
