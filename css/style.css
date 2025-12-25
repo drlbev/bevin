@@ -404,7 +404,7 @@ main {
     transform: translateY(-2px);
 }
 
-/* Content Editor Styles */
+/* Content Editor Styles - ONLY 1rem font size */
 .content-editor {
     min-height: 300px;
     padding: 16px 0;
