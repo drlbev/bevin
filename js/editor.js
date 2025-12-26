@@ -354,8 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hrBtn.onclick = () => {
         const hr = document.createElement('hr');
+        hr.style.border = 'none';
+        hr.style.borderTop = '1px solid #000';
+        hr.style.width = '100%';
+        hr.style.margin = '16px auto';
+
         insertAtCursor(hr);
         insertAtCursor(document.createElement('p'));
+
         markDirty();
         debounceAutoSave();
     };
