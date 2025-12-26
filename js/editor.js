@@ -353,8 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
     underlineBtn.onclick = () => document.execCommand('underline');
     
     hrBtn.onclick = () => {
-        document.execCommand('insertHorizontalRule');
-
         const hrs = editor.querySelectorAll('hr');
         const hr = hrs[hrs.length - 1];
         if (!hr) return;
