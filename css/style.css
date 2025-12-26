@@ -455,6 +455,12 @@ main {
     color: var(--primary-hover);
 }
 
+.content-editor hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 16px auto;
+    width: 100%;
+}
 
 /* Temporary image styling */
 .temp-image {

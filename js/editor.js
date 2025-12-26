@@ -351,20 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
     boldBtn.onclick = () => document.execCommand('bold');
     italicBtn.onclick = () => document.execCommand('italic');
     underlineBtn.onclick = () => document.execCommand('underline');
-    
+
     hrBtn.onclick = () => {
-        const hrs = editor.querySelectorAll('hr');
-        const hr = hrs[hrs.length - 1];
-        if (!hr) return;
-
-        hr.style.border = 'none';
-        hr.style.borderTop = '1px solid #000';
-        hr.style.width = '100%';
-        hr.style.margin = '16px auto';
-
+        const hr = document.createElement('hr');
+        insertAtCursor(hr);
+        insertAtCursor(document.createElement('p'));
         markDirty();
         debounceAutoSave();
-    };    
+    };
 
     smallHrBtn.onclick = insertSmallHr;
 
