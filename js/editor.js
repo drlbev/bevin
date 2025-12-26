@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hr.style.border = 'none';
         hr.style.borderTop = '1px solid #000';
         hr.style.width = '100%';
-        hr.style.margin = '16px 0';
+        hr.style.margin = '16px auto';
 
         markDirty();
         debounceAutoSave();
