@@ -105,82 +105,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createDraftCard(draft) {
         const descriptionPreview = (draft.description || '').trim();
-        const contentPreview = stripHtmlAndLimit(draft.content, 120);
-        const previewText = descriptionPreview;
 
-        const postCard = document.createElement('div');
-        postCard.className = 'post-card draft';
-        postCard.dataset.id = draft.id;
+        const cardLink = document.createElement('a');
+        cardLink.className = 'post-card draft';
+        cardLink.href = `create.html?draftId=${draft.id}`;
 
-        postCard.innerHTML = `
+        cardLink.innerHTML = `
             <div class="post-card-content">
                 <h2>${draft.title || 'Untitled Draft'}</h2>
-                ${previewText ? `<p>${previewText}</p>` : ``}
+                ${descriptionPreview ? `<p>${descriptionPreview}</p>` : ``}
                 <small>Last saved: ${formatDateTime(draft.lastSaved)}</small>
             </div>
+
             <div class="post-card-actions">
-                <a class="action-btn edit" href="create.html?draftId=${draft.id}" title="Edit Draft" target="_blank">
+                <a
+                    class="action-btn edit"
+                    href="create.html?draftId=${draft.id}"
+                    title="Edit Draft"
+                >
                     <i class="fa-solid fa-pen-to-square"></i>
                 </a>
-                <button class="action-btn delete" title="Delete Draft">z
+
+                <button class="action-btn delete" title="Delete Draft">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         `;
 
-        postCard.addEventListener('click', e => {
-            if (e.target.closest('a, .action-btn')) return;
-            window.location.href = `create.html?draftId=${draft.id}`;
-        });
-
-        postCard.querySelector('.delete').addEventListener('click', e => {
+        cardLink.querySelector('.delete').addEventListener('click', e => {
+            e.preventDefault();
             e.stopPropagation();
+
             if (confirm('Are you sure you want to delete this draft?')) {
                 deleteDraft(draft.id);
             }
         });
 
-        return postCard;
+        return cardLink;
     }
 
     function createPostCard(post) {
         const descriptionPreview = (post.description || '').trim();
-        const contentPreview = stripHtmlAndLimit(post.content, 120);
-        const previewText = descriptionPreview;
 
-        const postCard = document.createElement('div');
-        postCard.className = 'post-card';
-        postCard.dataset.id = post.id;
+        const cardLink = document.createElement('a');
+        cardLink.className = 'post-card';
+        cardLink.href = `view.html?id=${post.id}`;
+        cardLink.target = '_blank'; // optional: remove if you want same-tab
 
-        postCard.innerHTML = `
+        cardLink.innerHTML = `
             <div class="post-card-content">
                 <h2>${post.title || 'Untitled'}</h2>
-                ${previewText ? `<p>${previewText}</p>` : ``}
+                ${descriptionPreview ? `<p>${descriptionPreview}</p>` : ``}
                 <small>${formatDateTime(post.date)}</small>
             </div>
+
             <div class="post-card-actions">
-                <a class="action-btn edit" href="create.html?id=${post.id}" title="Edit" target="_blank">
+                <a
+                    class="action-btn edit"
+                    href="create.html?id=${post.id}"
+                    title="Edit"
+                >
                     <i class="fa-solid fa-pen-to-square"></i>
                 </a>
+
                 <button class="action-btn delete" title="Delete">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         `;
 
-        postCard.addEventListener('click', e => {
-            if (e.target.closest('a, .action-btn')) return;
-            window.location.href = `create.html?draftId=${draft.id}`;
-        });
-
-        postCard.querySelector('.delete').addEventListener('click', e => {
+        cardLink.querySelector('.delete').addEventListener('click', e => {
+            e.preventDefault();
             e.stopPropagation();
+
             if (confirm('Are you sure you want to delete this post?')) {
                 deletePost(post.id);
             }
         });
 
-        return postCard;
+        return cardLink;
     }
 
     async function deletePost(postId) {

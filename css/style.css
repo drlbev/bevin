@@ -97,12 +97,16 @@ main {
     box-shadow: 0 3px 15px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
     overflow: hidden;
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 
 .post-card:hover {
     cursor: pointer;
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    text-decoration: none;
 }
 
 .post-card.draft {
@@ -355,6 +359,7 @@ main {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .primary-btn {
