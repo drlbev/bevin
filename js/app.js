@@ -41,10 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    createPostBtn.addEventListener('click', () => {
-        window.location.href = 'create.html';
-    });
-
     loadContent();
 
     async function loadContent() {
@@ -123,23 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <small>Last saved: ${formatDateTime(draft.lastSaved)}</small>
             </div>
             <div class="post-card-actions">
-                <button class="action-btn edit" title="Edit Draft">
+                <a class="action-btn edit" href="create.html?draftId=${draft.id}" title="Edit Draft" target="_blank">
                     <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="action-btn delete" title="Delete Draft">
+                </a>
+                <button class="action-btn delete" title="Delete Draft">z
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         `;
 
         postCard.addEventListener('click', e => {
-            if (!e.target.closest('.action-btn')) {
-                window.location.href = `create.html?draftId=${draft.id}`;
-            }
-        });
-
-        postCard.querySelector('.edit').addEventListener('click', e => {
-            e.stopPropagation();
+            if (e.target.closest('a, .action-btn')) return;
             window.location.href = `create.html?draftId=${draft.id}`;
         });
 
@@ -169,9 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <small>${formatDateTime(post.date)}</small>
             </div>
             <div class="post-card-actions">
-                <button class="action-btn edit" title="Edit">
+                <a class="action-btn edit" href="create.html?id=${post.id}" title="Edit" target="_blank">
                     <i class="fa-solid fa-pen-to-square"></i>
-                </button>
+                </a>
                 <button class="action-btn delete" title="Delete">
                     <i class="fa-solid fa-trash"></i>
                 </button>
@@ -179,14 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         postCard.addEventListener('click', e => {
-            if (!e.target.closest('.action-btn')) {
-                window.open(`view.html?id=${post.id}`, '_blank');
-            }
-        });
-
-        postCard.querySelector('.edit').addEventListener('click', e => {
-            e.stopPropagation();
-            window.location.href = `create.html?id=${post.id}`;
+            if (e.target.closest('a, .action-btn')) return;
+            window.location.href = `create.html?draftId=${draft.id}`;
         });
 
         postCard.querySelector('.delete').addEventListener('click', e => {
