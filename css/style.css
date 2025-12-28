@@ -452,7 +452,7 @@ main {
 }
 
 .content-editor a:visited {
-    color: var(--primary-hover); /* #8a5eff */
+    color: var(--primary-hover); 
 }
 
 .content-editor a:hover,
