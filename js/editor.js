@@ -674,7 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ctrl) return;
 
         switch (e.key.toLowerCase()) {
-            case 's': e.preventDefault(); saveDraft(false); break;
             case 'enter': e.preventDefault(); publishBtn.click(); break;
             case 'b': e.preventDefault(); document.execCommand('bold'); break;
             case 'i': e.preventDefault(); document.execCommand('italic'); break;
@@ -683,8 +682,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.shiftKey) {
                     e.preventDefault();
                     document.execCommand('strikeThrough');
+                } else {
+                    e.preventDefault();
+                    saveDraft(false);
                 }
-                break;        
+                break;     
             case 'z':
                 e.preventDefault();
                 if (e.shiftKey) document.execCommand('redo');
