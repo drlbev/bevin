@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const boldBtn = document.getElementById('bold-btn');
     const italicBtn = document.getElementById('italic-btn');
     const underlineBtn = document.getElementById('underline-btn');
+    const strikeBtn = document.getElementById('strike-btn');
     const hrBtn = document.getElementById('hr-btn');
     const smallHrBtn = document.getElementById('small-hr-btn');
 
@@ -351,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     boldBtn.onclick = () => document.execCommand('bold');
     italicBtn.onclick = () => document.execCommand('italic');
     underlineBtn.onclick = () => document.execCommand('underline');
+    strikeBtn.onclick = () => document.execCommand('strikeThrough');
 
     hrBtn.onclick = () => {
         const hr = document.createElement('hr');
@@ -677,6 +679,12 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'b': e.preventDefault(); document.execCommand('bold'); break;
             case 'i': e.preventDefault(); document.execCommand('italic'); break;
             case 'u': e.preventDefault(); document.execCommand('underline'); break;
+            case 's':
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    document.execCommand('strikeThrough');
+                }
+                break;        
             case 'z':
                 e.preventDefault();
                 if (e.shiftKey) document.execCommand('redo');
